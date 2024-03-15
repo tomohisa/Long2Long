@@ -11,7 +11,7 @@ public static class OpenAiRunner
 {
     public static async Task<L2LResults> RunAsync(SplitInputText inputs, Long2LongSettings settings)
     {
-        var result = L2LResults.Default(L2LServiceProvider.Anthropic);
+        var result = L2LResults.Default(L2LServiceProvider.OpenAi);
 
         var task = inputs.Chunks.Aggregate(
             ImmutableList<Task>.Empty,

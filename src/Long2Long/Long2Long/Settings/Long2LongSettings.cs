@@ -7,7 +7,7 @@ public record Long2LongSettings
     public bool UseConsoleMessages { get; init; } = true;
 
     /// <summary>
-    ///     if null, use standard input
+    ///     if null or empty, no use input
     /// </summary>
     public string? InputFile { get; init; }
 

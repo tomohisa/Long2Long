@@ -8,7 +8,7 @@ public static class GeminiRunner
 {
     public static async Task<L2LResults> RunAsync(SplitInputText inputs, Long2LongSettings settings)
     {
-        var result = L2LResults.Default(L2LServiceProvider.Anthropic);
+        var result = L2LResults.Default(L2LServiceProvider.Gemini);
 
         foreach (var chunk in inputs.Chunks)
         {

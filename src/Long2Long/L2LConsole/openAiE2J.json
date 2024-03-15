@@ -11,5 +11,6 @@
   ],
   "UseAnthropic": false,
   "UseAzureOpenAi": false,
+  "UseGemini": false,
   "UseOpenAi": true
 }

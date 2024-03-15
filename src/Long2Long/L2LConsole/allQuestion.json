@@ -1,0 +1,15 @@
+{
+  "OutputFile": "outputQuestion.txt",
+  "MaxTokenCount": 500,
+  "MinTokenCount": 400,
+  "Prompts": [
+    {
+      "System": "あなたはコンピューターシステムのアーキテクトです。色々なシステムの利点やトレードオフをよく考慮して質問に答えてください。",
+      "User": "イベントソーシングとステートソーシングのトレードオフをC#の実例を含めて説明してください。(500文字程度で短く)\n------\n"
+    }
+  ],
+  "UseAnthropic": false,
+  "UseAzureOpenAi": false,
+  "UseGemini": false,
+  "UseOpenAi": true
+}

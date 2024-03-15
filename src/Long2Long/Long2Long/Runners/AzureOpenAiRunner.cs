@@ -1,5 +1,6 @@
 using Azure;
 using Azure.AI.OpenAI;
+using Azure.Core;
 using Long2Long.L2L;
 using Long2Long.Settings;
 using Long2Long.Texts;
@@ -10,7 +11,7 @@ public static class AzureOpenAiRunner
 {
     public static async Task<L2LResults> RunAsync(SplitInputText inputs, Long2LongSettings settings)
     {
-        var result = L2LResults.Default(L2LServiceProvider.Anthropic);
+        var result = L2LResults.Default(L2LServiceProvider.AzureOpenAi);
 
         var task = inputs.Chunks.Aggregate(
             ImmutableList<Task>.Empty,
@@ -45,9 +46,18 @@ public static class AzureOpenAiRunner
         {
             return Task.FromResult(result with { ErrorMessage = "AzureOpenAiModel が入力されていません。" });
         }
+        var clientOptions = new OpenAIClientOptions
+        {
+            Retry =
+            {
+                NetworkTimeout = TimeSpan.FromMinutes(5), Mode = RetryMode.Exponential,
+                MaxRetries = 2
+            }
+        };
         var openAiClient = new OpenAIClient(
             new Uri(settings.AzureOpenAiUrl),
-            new AzureKeyCredential(settings.AzureOpenAiApiKey));
+            new AzureKeyCredential(settings.AzureOpenAiApiKey),
+            clientOptions);
 
         foreach (var prompt in settings.Prompts)
         {
@@ -58,7 +68,8 @@ public static class AzureOpenAiRunner
                 options.Messages.Add(new ChatRequestSystemMessage(prompt.System));
                 options.Messages.Add(new ChatRequestUserMessage(prompt.User + text));
 
-                var message = openAiClient.GetChatCompletionsAsync(options).Result;
+                var message = openAiClient.GetChatCompletions(options);
+                // get all stream
                 result = result with
                 {
                     Phases = result.Phases.Add(
