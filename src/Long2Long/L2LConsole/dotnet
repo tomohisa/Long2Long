@@ -1,0 +1,1058 @@
+[Music]
+0:11
+thanks everyone for coming this is the main modeling made functional and
+0:18
+hopefully you haven't seen this before otherwise you'll know the answer to all these questions but before we get
+0:24
+started I just actually have a little challenge for you which is here's some
+Challenge
+0:30
+code this is f-sharp code which is what I'll be using the code really doesn't
+0:35
+matter but this is some sort of record type and there's these fields and there's an email address and there's
+0:41
+this flag called is email verified which must be true if you have proved with the own email by
+0:48
+clicking a link in an so if you saw this code in a code of you would you be happy
+0:55
+with it or would you want to change it and if you would want to change it why would you want to change
+1:03
+it's using primitive types good any other
+1:14
+yeah the state is so it's hard to understand using a boolean to represent something much more complex and yeah so
+1:22
+I mean I bit to be honest I probably would have been fine with this a few years ago but I've sort of evolved my
+1:28
+thinking about this kind of design and I'm going to try and explain in this talk I'm going to try to explain why you
+1:36
+know how I've evolved and why you might want to think about changing stuff so
+Domain Modeling Made Functional
+1:41
+domain modeling made functional my name's Scott volution I have a twitter handle and I have F sharp F on profit
+1:49
+comm I'm gonna be using F sharp for all these examples but this is not really about a sharp per se it's about domain
+1:56
+modeling so there's a whole functional programming people there's a whole group of for domain driven design people and
+2:02
+I'm right in the intersection and currently this is a very small intersection because the functional
+2:08
+programming people tend to be quite mathematical and they don't care about domain design and the domain of design
+2:13
+people tend not to be into functional programming so you know hopefully this talk will persuade you these things
+2:19
+actually can go together really really well people think the functional programming you know is good for mathematics and
+Functional Programming
+2:27
+parallel processing and you have to have a PhD in computer science to understand
+2:32
+it but I'm here to tell you that functional programming is really good for boring line of business applications
+2:39
+lobbers I call these blubbers and you know this is things like accounting
+2:45
+inventory management ecommerce boring stuff
+2:50
+basically the stuff that most businesses do and most probably most of you and certainly what I used to do is this is
+2:55
+the your day job this is what you get you make your living doing and I think functional programming is actually really good for this stuff it's not it's
+3:02
+not just good for fancy stuff it's good for boring stuff so I'm gonna try and persuade you that functional programming
+3:08
+and domain design can actually get on together they can actually be friends so
+3:14
+there you go right so let's talk about design I'm just going to tell you my take on why design is important so just
+Design
+3:22
+like any process software developed where is a process there's an input and you do
+3:28
+something and there's an output and we love to talk about the process we love to talk about coding and testing and
+3:36
+what's the best compiler and what's the best editor and vice versus vim versus Emacs and you know TDD versus BDD vus
+3:45
+like we love to talk about all the stuff but if you if you remember the thing you know garbage in garbage out that means
+3:52
+if you have bad inputs you will have bad output so if you can reduce the garbage
+3:59
+coming in then hopefully you can have reduce the garbage coming out if you have bad garbage coming in the best
+4:07
+compiler the best editor the best toolkit the best development processes will not help you
+4:13
+you will still end up delivering something bad so the idea of trying to reduce the garbage coming in I call that
+4:19
+design okay that's just a general word for just trying to understand what's going on before you start building it so
+4:27
+how do we do design right I think that's why we're all here there's confidence to try and figure this out so there's two
+Agile Contribution
+4:32
+parts the first thing I'm going to take from agile contribution is getting rapid feedback and you know doing something
+4:39
+and learning from it as fast as possible don't just take six months to deliver something try and deliver something in
+4:44
+two weeks or one week or a few days and then from DDD I like to think of domain
+4:51
+driven design is actually trying to create a shared mental model that everyone is on the same page everyone is thinking the same way everyone is using
+4:57
+the same words and that shared mental model is also in the code it's not just
+Shared Model
+5:04
+in people's heads so here's a little picture of the shared mental model and we have experts domain experts subject
+5:11
+matter experts they're sometimes called we have product people we have developers we have customers users whatever you wanna call them
+5:17
+stakeholders everybody everyone involved should be sharing the same mental model
+5:22
+that's my version of domain driven design they're all using the same language the same concepts and in
+5:30
+particular like I said the code is part of this and the main model and the code and the
+5:37
+documentation that all tried to be the same thing okay and the common language is in the code as well not just in
+5:43
+people's heads so when I talk to non developers or even developers and they
+5:50
+say can you really have the code represent the domain this is what people
+5:55
+think code looks like especially non developers you know and it's like yeah this does not was you
+Code
+6:01
+know this does not represent anything useful right this is so the kind of thing I'm talking about this is the kind
+6:06
+of code I want to show you the kind of code that I think you should be writing so you have to try and guess what domain
+6:12
+this is okay so if you can win points by trying to you know figure it out right
+6:18
+so yes here we have our game and hopefully you've guessed that it's something to have a card game and
+6:25
+there's something called a suit and there's something called a rank and there's something called a card and there's something called a player now
+6:31
+what's interesting is I imagine that most of you don't know F sharp this is f sharp code and even though you don't
+6:37
+know F sharp you could probably understand this code because this is about the concepts
+6:43
+so we have our shared language down the side right and the way I explain this to
+6:48
+non developers because I want non developers to read this code not just programmers you know the vertical bar is
+6:54
+a choice so it's a club or a diamond or a spade or a heart the little star means a pair so a card
+7:01
+is a it's a choice of a one pick suit and then pick a rank you have a list type and then we have this thing with an
+7:07
+arrow so this is a to deal is an action it's not just a noun it's a verse
+7:14
+something you do and we're going to represent in F sharp or in functional model we're going to represent this
+7:19
+function so this says deck arrow deck star card alright so what does that mean
+7:25
+so here is our function so functions have inputs and outputs and so our deal
+Function
+7:31
+function the input is a deck of cards and after we've dealt a card there is
+7:38
+now a new card on the table and we have a different deck because in in
+7:43
+functional programming everything's immutable so the deck you don't you take
+7:48
+the original deck you create a copy of the original deck with that one card missing so the input is an original deck
+7:54
+and the output is a new deck and a card on the table so we represent that with deck arrow that's the input and then the
+8:02
+output is a pair it's a deck and a card so that's how we represent an action in
+8:08
+our model let's look at picking up a card so there's a card on the table and I have some hand I have my own cards and
+8:15
+I'm going to pick it up so the input is my hand and the card on the table and
+8:21
+after I've done the pick up the card on the table is missing and I have a new
+8:26
+hand with a new card a so it's a different hand it's changed so again I
+8:31
+represent this saying the input is a pair of things and the output is my new hand
+8:38
+so this is how we model actions verbs workflows use cases stories whatever you
+8:45
+wanna call them this is how we have model it in functional so here's a question do you think this
+Coding
+8:50
+is a reasonable amount of code to write for this domain I would say yes
+8:56
+basically we fit the in the hole the domain is on one page it's pretty good we don't know it's not in 20 different files you know it's actually right there
+9:03
+in one page do you think a non programmer I could understand this and I
+9:09
+think yes in fact when I've been doing domain modeling exercises with people when I have everyone in a room
+9:15
+I have programmers in them but I also have the domain experts and the subject matter experts and the product owners in
+9:21
+the room and I'm typing all this stuff out and someone said this is great but where's the code
+9:27
+because this is but it's like this is code right do you think that non-programmers if I'm typing this up on
+9:33
+the screen do you think that non-programmers could provide useful feedback for example there's a
+9:39
+deliberate mistake anyone see what the mistake is ace is missing right now I
+9:44
+don't think you have to be a programmer to notice that right this is the kind of thing in real in real life I've had
+9:50
+people tell me that I forgot something I you know I didn't I missed out one of the choices because you know but they
+9:58
+can give me that kind of feedback right away so this thing about rapid feedback is really important now in agile the
+10:06
+idea is to get feedback in weeks or even better in days by having a rapid prototype by having a minimal via
+10:13
+product by having all these different words wouldn't it be great if you could get for you I can minutes rather than
+10:18
+days that would be awesome so this process is great for that because what you're doing is I go I type all this
+Agile
+10:25
+stuff on the screen and I'm talking to people and getting information and I type up something like you know a deck
+10:31
+is a list of cards and to deal you start with a deck and you know the function I
+10:37
+just told you and the domain experts will probably say this deck thing you
+10:43
+know that's not quite right when we deal in a real card game we don't use a deck we use a shuffled deck something called
+10:50
+a shuffled deck and I don't know anything about card games and so I say okay so I can put it down like this make
+10:58
+sure I got the right understanding and they say that's good and then I say you know what is a shuffled deck what is
+11:04
+this special thing called a shuffle the deck they say it's just a list of cards so I write this list of cards now what's
+11:11
+interesting here is that I don't say it's the same thing as a deck because
+11:17
+they're both lists of cards the shuffle deck is a different concept from a normal deck from a none shuffle deck
+11:24
+it's a different concept in the domain it's not a normal deck with a boolean flag saying whether it's been shuffled
+11:31
+or not it's not a it's not they're two subclasses of a base class right a shuffle deck is just a different concept
+11:37
+from a normal deck they might have the same representation they might both be represented by list
+11:43
+cards but they're different concepts okay then I'm going I said okay so we've
+11:48
+got this shuffled deck thing where do I get one of these shuffled decks okay how do I make a shuffled deck and the expert
+11:54
+says well you do a shuffle now when you're talking to the experts they normally look like they act you know
+11:59
+like you're stupid because you're asking all these stupid questions and you don't know anything and this is good because you should be asking these questions and
+12:07
+learning about the domain you want to become a domain expert yourself so I said okay you need to do a shuffle so
+12:13
+you know you this concept called shuffling and you start with a normal deck and you end up with a shuffle deck
+12:20
+so what we've learned just by typing the stuff down I've got feedback within minutes now I don't have to wait a week
+12:27
+until we've actually delivered something I've got feedback from the domain experts straightaway and I've learned something I personally
+12:34
+have learned something new about the domain so in this in this idea you know we're all now using the same language as
+12:42
+a developer next time I talk to the domain expert I will use a word like shuffle deck is a new concept I've
+12:47
+learned so you know so this is very very fast process and you're basically
+12:53
+writing code but not really you know you're learning very fast from the
+12:59
+experts in an agile way but you're not actually writing code but what's cool is
+13:04
+this code because it's code and it's not a document and it's not a UML diagram
+13:10
+this code can be used as a template for writing your real cut so this is
+13:15
+typically the first file in your project your f-sharp projects Islay this is the
+13:21
+kind of these are the concepts now the rest the code is more complicated but the concepts of a string so here's our
+13:26
+final piece of code no notice it's domain-driven it's not database driven
+13:32
+so there's nothing about foreign keys there's nothing about tables right it's pure everything every single word here
+13:38
+is something to do with the domain so this is what's called persistence ignorance in the domain of design book
+13:46
+nothing to do with databases now obviously at some point you're going to have to put it in a database that's fine
+13:52
+but that's not part of the domain logic that's something else you know but it's not part this bit here he's also not
+13:59
+object-oriented there are no base classes there's no manager classes there's no factory classes everything is
+14:06
+the main driven so in the real world you have this vocabulary you like suit and
+Domain vs Code
+14:12
+rank and card and so on so in the code you have the same vocabulary and you
+14:17
+know the domain code should always be in sync with the real world so if you learn something about the real world like slow
+14:24
+we've learned this new thing called a shuffle deck and a new thing called shuffle we put that in the code we represent that in the code itself we
+14:30
+don't add a boolean a flag to the deck when we learn that we actually literally model it as a sip so
+14:37
+that's the right way to do it the one way to do it is the Oh a round alright
+14:42
+so don't use programmer jargon in your domain if you say we need some sort of class that manages all the players or we
+14:48
+need a base class between the deck and a shuffle deck or we need an abstract card proxy factory beam right so this kind of
+14:58
+jargon should not be in your domain now obviously in real code those complicated
+15:04
+bits you know but that should be in the implementation side that shouldn't be in
+15:09
+the domain side so don't if you start doing this you're doing it wrong ok so one of the agile philosophies is
+15:18
+you know if you can make the design be in the code that's great because the code is the source of truth documentation goes out of date UML
+15:25
+diagrams go at a date but the code is the design you know the code is the
+15:32
+source of truth if you can have the design in the code that's the best possible solution so I think this is the a very good answer here and of course
+15:38
+this is executable code like I see this would typically be the first file in your project and then the rest of the
+15:44
+code within depend on this so if you change this the rest of the code will break until it fixes so this is the code and then the design are always going to
+15:50
+be in sync and it's not just about the result of trying to create this this is not like
+15:57
+an answer the process is a really important part of this the idea is trying to get everyone on the same page
+16:03
+when you do it when I do these kind of workshops with people people argue about what is the right word to use are we
+16:08
+using the same words and yeah that process of arguing and debating and discussing and and talking that is a
+16:16
+really important part of it getting everyone on the same page is the actually the important part this is just
+16:21
+the output of that but you know you don't just do this and then share it with everyone so here's the answer this
+16:27
+is kind of a living document that's based on you're trying to just capture what people are thinking you're not trying to force it on people
+16:34
+so the process is very very important and we'll see this a lot you know event storming it's all about the process it's
+16:40
+not about the results you know context mapping all this stuff it's all about getting everyone on the same page and everyone to share their
+16:47
+ideas okay so this is a key domained of a design principle which is communicate
+Problems
+16:53
+the design in the code so now if we go back to this let's look at the problems write this the problem with this is it
+17:00
+does not communicate design in the code that's the main problem with it so for example which values are optional
+17:07
+some values might be optional and some required so in this case the middle initial might be optional but it's not
+17:14
+communicated here you might have some validation logic somewhere that checks it but that's not communicated what are
+17:20
+the constraints I mean can the first name really be a million characters long I don't know how when you can put in a
+17:26
+string but a lot can it be a million characters long can it contain non-printable characters can it contain line feeds and it just be all blank
+17:32
+there's some constraints right it's not at all obvious it just says it's a string there's no guns no constraints
+17:38
+anywhere so that's bad so let's say you're going to put it in a database you want to have the constraint that it's
+17:44
+less than 50 characters and it's not like now you could put that constraint
+17:50
+in the validation logic somewhere but that's not in the domain model that's somewhere buried in your code and it's
+17:56
+very easy for people to bypass validation logic by mistake if it's actually in the code it's really hard to Piper
+18:01
+which feels are linked where the consistency boundaries you know some fields can have to be changed as a group
+18:07
+and some fields can be changed independently aggregate roots in the main driven design terminology that is
+18:14
+not at all clear right so if you example these three fields have to be changed as a group as an atomic unit and these ones
+18:21
+have to be changed as an atomic unit it's not at all clear from the design and finally there's some domain logic
+18:27
+here we have this flag and when should it be true and when should be false so
+18:34
+the answer is go and look it up in the documentation no that's the wrong answer you do not look it up in the
+18:40
+documentation because you're going to get it wrong or someone's gonna forget and but I make a mistake right so this
+18:45
+is does not communicate at all what you're supposed to do with this flag so the will the business will hear is if
+18:51
+the email address is reset to a new value you have to set it to false until
+18:56
+it's been verified ok you have to set it to false because otherwise it's a security that is not communicated in
+19:02
+this design okay so here's our problems you know the main thing is it does not
+19:08
+communicate a lot of important design decisions ok so all these four things and there's fully more we can fix these with
+19:16
+functional domain modeling and by the end of the talk you'll see how I fix them so now before I show you how to fix
+19:22
+them I need to tell you about functional programming and algebraic types so algebraic is a mathematical jargon word
+19:29
+and I'm going to use the word composable instead composable types alright so what's a composable type so in
+19:37
+functional programming the first thing is that types are not classes they're more like sets so if you have a function
+19:44
+so let's just go back to the very beginning what is a function so a function is something that takes inputs into outputs so I'm going to use a
+19:50
+little railway track analogy I'm gonna put a little tunnel on it something a tunnel of transformation something goes
+19:57
+into this tunnel like an apple and it comes out as a banana ok so this is a function that turns apples into bananas
+20:03
+ok so that's everything you need to know about functions you're an expert in
+20:09
+functional programming okay so a lot of types so here we know this function what is a type well a type
+20:14
+is just a name for a set of things so all the set of valid inputs all the set
+20:20
+of valid outputs if you give that a name that's all the type is so it's not like a class at all so for example if all the
+20:28
+possible inputs are integers we call that integer all the possible strings we call that string okay but we could have
+20:35
+all the possible people in the world and we call that person we could have all the possible fruit in the world and they
+20:41
+call that fruit now because it's a set you can have anything in a set right
+20:46
+anything can be in a set so you can have a set of functions that's the set of things so this is a type called fruit -
+20:54
+fruit functions functions that turn fruit into fruit so this is where it gets a little complicated because in
+20:59
+functional programming you can have functions that have functions as input and they return other functions as
+21:05
+output so you can have a function that turns this function which creates another function which has another function as a parameter so that's where
+21:11
+it gets complicated but the basic principles are pretty straightforward right so that's everything you need to know about types so let's talk about
+21:18
+composition so composition is like Lego and hopefully everyone knows how to use Lego so if you think about Lego all the
+21:26
+pieces are designed to be connected they all have little bumps on them right that's just like the algebraic type
+21:31
+system that's why I call a composable type system all the types are designed to fit together and that is only
+Data Behavior
+21:38
+possible because these types are just sets and so just like sets you can do
+21:43
+set Union and set intersection and cross products and all the stuff and that's only possible because there's no
+21:49
+behavior unlike oo in functional programming data and behavior are
+21:54
+completely separate things so the data is much easier to manipulate because it's just data and there's no behaviors
+22:00
+so a composable type system so how can we compose types in a
+22:05
+composable type system well we build new types some smaller types just like we build bigger things of Lego from smaller things Lego and we
+Choice Types
+22:13
+use and and we use or okay so what does and mean so let's say I want a fruit
+22:19
+salad like one of the lovely fruit salads out there and I say well to make a fruit salad you need an apple and a
+22:25
+banana and a cherry now notice I'm using the word and right so this is something
+22:32
+that you get in all programming languages a pear or a tuple or record type or a struck so anything in F sharp
+22:38
+we write like this this is a fruit salad has an apple field and a banana field and a cherry field and the apple field
+22:45
+has to be an apple kind of apple variety and the banana has to be a banana variety in the cylinder so this is again
+22:52
+if you look at it looks kind of like JSON alright so everyone's used to this kind of thing okay so now the other thing
+22:58
+which is different from most other languages is using or so if I want to snack I might say I want an apple or a
+23:06
+banana or a cherry and I'm using the word or does the kind of thing you can't
+23:12
+get in seashell for Java and in f-sharp we use a vertical bar to represent the
+23:18
+choices so it's an apple or a banana or a cherry now if it's an apple you have
+23:23
+to know what kind of apple it is what variety of Apple it is okay so in I call
+23:28
+these choice types because they they're choices the technical words of these things is some types or discriminated
+23:37
+unions or there's lots of jargon words but in from a domain modeling point of view I call them choices because it's a
+23:42
+choice so let's look at a real world example of how you build something from a choices let's say that you have a
+23:50
+payment system and you create a cash check or card this is kind of old example because nobody takes checks
+23:56
+anymore but you know for cash this there's no extra information it's just cash for checks you need a check number
+24:02
+for credit cards you need a car type and a card number and an expiry date and all
+24:07
+the other stuff so if you had to implement this model how would you do that okay now if you an oo person
+24:15
+you would probably say well let's create a infinite an interface or an abstract based class like a payment method and
+24:24
+then we create a subclass or an implementation for each possible choice so cash is a kind of payment methods
+24:31
+check is a kind of payment method credit card is a kind of payment method and each of the subclasses has the
+24:39
+information they need so that's kind of object-oriented version of doing it right I think most people would probably do it this way so let's look at how you
+24:46
+do it in another completely different way so I'm gonna do the other way by building up bigger things some small
+24:52
+things so I'm going to start with the smallest thing which is a check number and a card number and I'm gonna not
+24:59
+going to use primitive types just like we said and we're not going to use them I'm going to because people don't talk about innocent strings they talk about
+25:04
+check numbers and card numbers and a payment amounts and stuff right so I want to immediately define those things
+25:10
+using words like that and then I will have a choice maybe a
+25:15
+car type is a choice between the visa and mastercards and the credit card information I need is a car type and a
+25:23
+card number so we have an or visa or mastercard and crack card type and card
+25:31
+number so I'm using the or and the aunt right two different ways of building up types and then the payment methods going
+25:38
+back to the thing I say it's cash or cheque or card and if it's a cheque
+25:44
+there's some extra information which is the cheque number and if it's a card there's some extra information which is the card info and because I used or
+25:52
+there's a choice type but I can keep going I'm gonna say okay I want a thing called
+25:57
+a payment amount and I've got something called a currency which is euros or dollars so that's another choice and say
+26:05
+I want a payment so a payment is an amount and a currency and a payment
+26:10
+method so what I've done and that's it so there's a record type I built up a you
+26:16
+know using and so what I've done is I've built bigger types and smaller types using the composition approach
+26:22
+and so this is why composition I think is really good it's really a nice way of doing
+26:28
+so you know if you're used to types in a language like C or C sharp you normally
+26:36
+think of it as an annotation for type checking just to make sure that you can't pass a string into an inch by
+26:41
+mistake I think you know that kind of thing it's kind of annoyance but if you think of it as a domain modeling tool
+26:47
+you know dealing as a deck in a deck of cards it's a way to capture information
+26:53
+about what you're trying to do but what's cool is if you do this you get both at once because the compiler will
+27:00
+type check your domain model so if you get it wrong the code won't compile so
+27:07
+having it trying to do domain modeling using a static type system like this is actually like carrying a compile-time unit tests you do not have to write a
+27:14
+unit test for certain things because it literally won't compile if you get it wrong so that's pretty nice so static
+27:21
+typing is great for the domain modeling statically type all the things okay all
+Optional Values
+27:27
+right now let's see what we can do with this type system so let's start off with the optional values okay so here we have
+27:33
+our contact again and as I said the middle initial is optional how do we
+27:39
+represent that how do we represent optional value so I'm going to start with a simpler thing let's say I'm just
+27:45
+taking the length of a string so I have a function and the input is the set of all possible strings and the output is
+27:50
+the set of all possible intz so I say this is a string to int function there's just one little problem
+27:58
+is that in most languages null is a valid value for a string I can say
+28:04
+something's a string and I can give it the value null and that is bad that's
+28:09
+really really bad okay because null is not a string
+28:14
+pretends to be a string if you if you assign it says yeah the compiler say yo null the string no worries when you're
+28:21
+trying to use it I said no no no no not really a string I'm gonna throw no reference exception so I like to say
+28:28
+that now is like cerumen of static typing if you know Lord of the Rings you know it's treason he's a traitor he
+28:35
+pretends to be your friend and he's going to turn around and stab you in the back so null is a really bad
+28:43
+idea so okay we're gonna say null is not allowed as a value don't ever allow now as a value so how can we represent
+28:49
+missing thinks then well if you think about it we say is either a string or it's missing notice I use the word or
+28:57
+there's a clue right so we're going to model it there's a choice it's either a choice between all the strings or
+29:04
+nothing okay so an in F sharp you have to tag these with a little flag to make
+29:12
+them very clear so we're gonna say that's some string and that's nothing and we're going to write it like this so optional string is a choice it's either
+29:18
+some string or nothing and if it's some string there's some extra later which is the actual string that it is so you say
+29:25
+this is just amazing optional strings fantastic and then let's create an optional int and then
+29:30
+let's create an optional boolean and after a while you see I've got some duplicate code here maybe you can make
+29:36
+them simpler so yeah what we do is we create a generic type option and that little tick is F sharps way of saying
+29:44
+it's a generic type so if in C in c-sharp well Java you wouldn't so this is a type that you can write
+29:51
+yourself now in most function languages it's built-in but if it wasn't built-in you could define it yourself because
+29:57
+you're not defining some special new thing that the compiler needs to understand you're just using the
+30:03
+composable type system as a toolkit for building new types and this is one of
+30:09
+the new types you can build so algebraic types are very nice you can do a lot of stuff that you can't really do in
+30:14
+traditional language ok so if we go back to this we just say instead of saying it's a normal string Mercedes an option
+30:20
+of a string with the angle brackets and one of the nice things in F sharp is you can actually put the option afterwards
+30:25
+so string option which is a little easier to read for non-technical people so the same thing that's nice and
+30:33
+readable right what about simple values and constrained values so as someone
+30:40
+pointed out we really should avoid primitive recession we shouldn't use int sand floats and bulls and strings in our
+30:47
+domain because that's not what people use in real world ok I was once at a I
+30:54
+want to do when I was younger and I was modeling something and I said well this is is this an integer or is it a float and they said is float something to do
+31:03
+with water you know they did not know what I was talking about was just fair enough why should they they're not
+31:08
+they're not a programmer so don't use the word float don't use the with integer use payment amounts or you know
+31:16
+product number or whatever it is swim and on top of that not only should we
+Constraints
+31:21
+not use forms of types but almost always integers and strings have some sort of
+31:27
+constraints it's very unusual for string to allow a string to have a million characters in it or to allow an integer
+31:34
+can you you know can you have integers which are 4 billion it's really maybe it's really unusual normally there's
+31:41
+some sort of constraints on your things so if we solve for an email address you know it can't be empty has to have some
+31:46
+sort of pattern matching like an app sign if you have customer ID which is an int it's probably not any int it's fully
+Rapper Types
+31:53
+a positive integer right so there's some sort of constraint so email addresses are not strings custom
+32:00
+IDs are not ins I mean another way to think about if you think about an int a customer ID the reason it's not an int
+32:06
+is because you can't take the square root of it can you add to customer IDs and get another customer ID you know can
+32:13
+you multiply it by five I mean doesn't make any sense right so they might be represented by int but they're not
+32:18
+actually intz in the domain so what we do is we use rapper types to
+32:25
+keep their distinct and here's two rapper types is the F sharp way of doing a rapper type we just put a a male of
+32:32
+string so it's rapping a string just an ID of int is rapping at int right so
+32:37
+rapping a string and rapping in this is very simple one line to do that so
+32:42
+here's two raps types an email dress wraps a string and a phone number wraps a string but because we got
+32:48
+wrappers around them they are now distinct types and that means you can't ever get an email address mixed up with a phone number and let's say we have a
+32:57
+customer ID and an order ID and they both RepRap into senior database but they're not the same type they're
+33:03
+different types they can't be mixed up you should never pass an order ID to somebody that's expecting a customer ID
+33:10
+it just doesn't make any sense so model them as distinct types always so you get
+33:16
+clear domain modeling and it also eliminates one kind of bug where you accidentally mix them up and you pass them in the mall or something
+33:24
+okay so now let's look at how we create one of these things let's say I want to create an email address and I've got a
+33:29
+string now if the string contains the @ sign then I'm going to take the string
+33:34
+and I'm going to wrap it up in the email address that's good what happens if it doesn't contain the out sign what should
+33:42
+I do should I return null no should I throw an exception no so what can I do what
+33:50
+can what can I return you know I can't return an email address because it's not a valid email does nothing right exactly
+33:58
+so one of the things if you if you throw if you return null or you would throw an exception or something if you look at
+34:04
+the signature it says you give me a string and I'll give you an email address and that is the lie that is
+34:10
+wrong so it's a deceptive piece of information so yes what I'm going to do
+34:16
+is return something or nothing just like we did with the optional thing and that's much better so if you look at the
+34:24
+signature it now says you give me a string and I might give you back an email address maybe if you give me a
+34:32
+good string so this is now this is not a lie this is much clearer this is better documentation - this is now you know a
+34:40
+self-documenting code better than the other one and we can do the same thing let's say we want to have strings that are 50
+34:46
+characters long so we create a wrapper type for them and then we create a special constructor for them and if it's
+34:52
+less than 50 that's good and if it's more you know if it's not then that's bad and if we look at the signature it
+34:58
+says you give me a normal string and I might give you back a string 50 if it's good so this kind of validation is
+35:04
+normally just done at the edges of your program you know when you get data coming in from a JSON thing or from and
+35:10
+whatever you have to validate it but once it's validated once you've got your string 50 or your email address it's
+35:17
+immutable so it can never change which means you never have to validate it ever again
+35:22
+so you never have to do any kind of defensive programming in your core domain code you never have to check for
+35:28
+null you never have to check that something's about it because once it's been validated at the edge you can pass
+35:33
+it around in full confidence that it can never go wrong so that's one of the nice things that
+35:40
+okay here's something which is a problem can you really have 999,000 items in
+35:49
+your shopping cart or your shopping cart no this is probably a bug because the
+35:56
+person who wrote this ecommerce site probably used an integer to represent the quantity right and you hear stories
+36:02
+of you know things overflowing to minus 1 or minus 32 K or something crate you
+36:08
+know this should never happen you should never be able to order that many things so that's because they didn't do domain
+36:14
+modeling so the right answer is to create a type a wrapper type now to be
+Wrapper Types
+36:21
+honest when I've done ecommerce sites I have never bothered to do this before because it's a lot of work creating
+36:27
+these wrapper types so you know creating a new type just for this domain or just
+36:32
+for this little piece of code is not something that people do generally because it's like I say it's a lot of
+36:38
+work but if it's one line of code it's a lot easier so if your language makes it easy to do you're gonna like to do it
+36:44
+much more okay let's look at the constructor so if it's greater than zero and less than 99 that's good and if it
+36:52
+isn't it's bad when we look at the signature says you give me integer and I might or might not
+36:59
+give you back an order line quantity now what's interesting about this is that 0 is not a valid value it has to be
+37:06
+greater than 0 so when you have the one of those minus buttons and you know Dan
+37:11
+you know two and you take away one that's one you take away another one it goes down to zero you can't make one of
+37:16
+these things so what that means is that when you're coding your UI or your
+37:23
+back-end or whatever you are forced to deal with the case when it goes down to zero you can't accidentally forget about
+37:29
+it so this is the idea where you know it forces you to think about that situation
+37:35
+because you don't actually have a valid quantity at that point so you what are you going to do I don't know you probably going to remove it from the
+37:41
+shopping cart but whatever the answer is you're going to have to think about it you can't just forget about it you know
+37:47
+and cause a bug so if we go back to our contact here's what we had originally so
+37:55
+the first thing we did is make an option and then the second thing we did is we created all these constraint i p-- s--
+38:02
+of all these different choices right so it's looking better already
+38:08
+the next thing is we need you know if you're a domain driven design person you'll recognize this is an entity so we
+38:15
+need to add and enter the ID and notice that I'm not it's not an int it's something called a customer ID special
+38:22
+to customers or contact it really should be a contact ID I guess and then here's our two things which really should be
+38:29
+separate well I can just rather than having them in one big structure I can just pull them out into two separate
+38:35
+structures and one of the nice things about having the data separate from the havior is
+38:42
+that this kind of pulling things apart and putting them back together again is really easy to do because there's no
+38:51
+behavior so you know refactoring is very very easy right so that's that now what about this
+38:58
+last thing here where is it it's email verify flag we're going to do with that
+39:04
+so let's talk about getting rid of flags altogether what we're going to do is
+39:09
+replace flags with choices so here is our situation we have this flag and we
+39:17
+have some business rules and it says if the email has changed that verified flag has to be set to false because who knows
+39:25
+you know you've said add anything and also if you do want to set it to true
+39:30
+you have to use a special verification service that compares you know that checks the email hash and all that other
+39:36
+stuff you can't just set it a tree because that's a security issue you have to go through this special verification
+39:42
+service so that's a business rule can we enforce the business rule in the design without having some logic somewhere and
+39:49
+the answer is yes we can so as it stands anyone can set it to true it's a
+39:55
+security problem and it's just bad it doesn't communicate the property issue so here's what we're going to do we're
+40:01
+going to create another wrapper type we're going to wrap an email address and we're going to call it a verified email
+40:06
+address so we have a wrapper around a wrapper and this is one of my favorite
+40:12
+principles which is no problem that can't be solved by wrapping it in another type we're going to see that so
+40:19
+by by doing this what we've said is that a verified email address is not the same as a normal email address right the
+40:25
+whole thing is it's a distinct type just like a shuffled deck is not the same thing as a normal deck we've created a
+40:31
+special concept in the domain and then we're going to have a verification
+40:37
+service now the verification verification service is a function which has two inputs and one output and the
+40:43
+input is an email address and a verification hash of some kind so you
+40:49
+give me the email address and I'm going to give you back a verified email maybe
+40:54
+because the hash might not match up or whatever I mean there's various reasons it might not work it's very clear that
+41:00
+it might not work sometimes so you have to deal with that okay so I might give you back a verified email okay so that's
+41:07
+the a ssin function and then here's the cool bit we take this contact information and
+41:13
+we change it into a choice we say it's either a choice between an unverified email and a verified email so this flag
+41:20
+has disappeared unverified or verified now in the unverified case the
+41:28
+information that goes along with it is just a normal email address so anybody can set it to be unverified all I need
+41:34
+is any old email address to set it to the verified case I have to have the
+41:40
+verified email that's the thing I need to have to put it into the verified case where do I get one of these verified
+41:47
+emails from I have to get it from the verification service right so the and
+41:53
+it's me now what I typically do is make the constructor private or something so that nobody else can pick one of these things except the verifications but by
+41:59
+doing that now just like the business rule says I have to get one from the verification service the only person who
+42:04
+can create one of these things so that's that business all I have to go through the verification service to get Authority so in that for that case to be
+42:12
+true okay so by replacing the boolean with a choice its first of all clearer
+42:18
+and secondly I've actually enforced those business rules I think it's amazing all right so to create that case
+42:26
+you have to go have a verified email and to create the verified email you have to go through the service so the business
+42:32
+rules are automatically enforced so this is a really nice way of doing it so I'm
+42:37
+modeling the domain more accurately and I'm also getting my business rules right so if we go back to our challenge
+Challenge Recap
+42:44
+we started off with one thing we now have a whole bunch of things we have an email address and a verified email and
+42:50
+contact information and a personal name and a contact and a verification we have a whole bunch of things that we didn't
+42:55
+have at the beginning so what's good about this is the lot of the stuff that
+43:01
+we had at beginning are now solved right which value is optional where you have this optional concept what are the
+43:06
+constraints well we have something called a string 50 we have something called an email address it's not just strings anymore
+43:12
+which feels are linked by breaking them into separate groups is much more obvious and is the domain logic clear
+43:19
+yes it is unlike that boolean flag it's crystal clear that there's these things called unverified and verify
+43:27
+now what's also cool about this is the ubiquitous language the common language
+43:32
+is evolving along with the design we started off with one thing and we have all these new things but this is not I
+43:39
+wouldn't say this is more complex because these are actual real words that real people use they will talk about something called a personal name they
+43:45
+talk about something called verified email and uh normally I mean these are words in the domain so we're actually
+43:50
+just representing that the main better we're not making it more complicated we're actually if anything we're making it more clear and of course this is
+43:59
+compatible code this is not your Mel diagram and now the other thing that in in Eric's book he talks about
+44:05
+refactoring towards deeper insight which means when you learn something about the domain often that opens up a whole new
+44:13
+way of thinking about certain things that you didn't really that you weren't really aware of before so for example we
+44:19
+just created this thing called a verified email to solve that particular problem but once we have this concept
+44:25
+called a verified email you might find all sorts of other uses for it in the domain right so this new curve often
+44:32
+like say you find a new concept and then you say well okay this rule we have a business rule that we didn't think about
+44:38
+that says you have to send parceled recess only to verify the emails now before we would have something where we
+44:44
+check the flag and only if it's set to true do we actually do the thing again we could easily make a mistake
+44:51
+and forget the business rule but if we with this new thing called a verified email we just say sending a password
+44:57
+reset it needs a verified email so our domain modelling is actually more it's now self documenting to send a password
+45:04
+reset you need a verified email okay I don't have to write a unit test for it I don't have to check any billion flags
+45:10
+you know self documenting and it's a compile time unit test all right one more thing sir let's say
+45:19
+that times change and we add something called an address a postal address to our context so we have an email and an
+45:25
+address and we have a new business rule that you have to have a contact must
+45:31
+have an email address or a postal address there must be one way of contacting you okay at least one way of
+45:37
+contact now this design as it stands does it meet that requirement no because
+45:47
+as it stands both over at both fields are acquired all right things are always required unless you tell they're optional ok well I'll make them both
+45:54
+optional and that doesn't work either right because they could both missing so
+46:00
+our problem is how do we model the facts that how do we model this business law well we could say well let them both be
+46:05
+missing and I'll have some special validation logics on whether it checks if they're both missing and throws an exception as I know we're not going to
+46:11
+do that we're not trying model it in the domain can't can we do that the answer is yes of course we can so
+46:19
+a great phrase is make illegal states unrepresentable so rather than letting people do something and then having
+46:25
+validation logic or special code checks that's a bad thing just don't let it happen in the first place okay so how
+46:32
+can we do that here's our business rule so if you think about it that means you
+46:37
+can have an email address or a postal address or both right that's what the
+46:43
+business will now I'm using the word or there's a clue now how am I gonna model
+46:48
+this there's three possibilities okay well I'm gonna model it like this email
+46:55
+only or address only or both right so by modeling it this way and then I you know
+47:02
+I stick it in my contact by modeling it this way there's only three possibilities
+47:07
+so it's self-documenting I don't have to have any special code that checks the fourth case because there isn't a fourth
+47:13
+gate I literally cannot compile the fourth case where they're both missing I don't have to write a unit test for it
+47:19
+he literally cannot happen it is not possible for me to write bad code and it's good if I'm a new developer and I'm
+47:27
+coming on to your team and I'm trying to understand what are the business rules I don't have to look at documentation I
+47:33
+don't have to ask somebody what are the business rules for emails or whatever make a look at the code code is really
+47:40
+really explicit it's kind of ugly I want to say it's beautiful code it's ugly but is explicit you're not going to make a
+47:47
+mistake right
+47:52
+so there's the idea of in try to encode the requirements in the type as much as possible now you can't always do that
+47:58
+the rules of Poker for example you know like with the card game you can encode a lot of the stuff you cant encode
+48:03
+everything but you can more than you think you can get at least get all the big concepts down and the concept of
+48:09
+dealing and picking up cards and you know all that stuff so static types are
+48:15
+almost as awesome as this cat on a unicorn right so communication is
+Communication is twoway
+48:21
+two-way it's okay to push back a contact
+48:30
+must have an email postal address you might say well that's actually really a bad thing because that might not be you
+48:37
+know it's hard to implement so let's change it to be a Content must have at least one way of being contacted
+48:43
+so that's better so instead of having both things we'll
+48:49
+say you've got one way of being contacted so here's all the different ways we can contact you we can contact you by email or address or whatever and
+48:55
+then these we go back and we say you've got a primary way of being contacted and a secondary way the prior way is
+49:01
+acquired and the secondary way is optional so this is a better design okay
+49:07
+this is much more common design because you can extend you say we need add Facebook you need to add texting in
+49:12
+their Twitter or whatever you can just extend this with all the different choice all right so to sum up we've used
+49:19
+code to represent the shared mental model we've shown how designs can evolve
+49:25
+this is really important you don't just want to get it right first time it's not a big design up front designs will
+49:30
+evolve you need to be able to have some way of embracing the change without being scared to make changes and I think
+49:36
+you can see in this approach it's quite easy to make changes and still be confident that you you know you have a
+49:41
+good design and this refactoring towards deeper insight is William so static typing I think is very very good here if
+49:47
+you're trying to do this in Python or Ruby or something I really wouldn't be as confident about making all these so composable type systems are awesome
+49:54
+you could see that we've got choices rather than inheritance we used options instead of null we used wrappers over
+50:01
+and over again and wrapping things and more wrappings and then finally this thing in your head always try to make
+50:07
+illegal states unrepresentable if you so if you like this talk I have this talks
+50:13
+on video and I'm going to pull you put this one up there at some point I have more videos I have a book if anyone has
+50:18
+the book and they want me to deface it I'll be quite happy to do that and contact me on Twitter if you got any
+50:23
+questions and if you like this one stay for the next talk in this room Romans talk which is like a deeper dive into
+50:30
+the same kind of thing thank you very much [Applause]
+50:40
+[Music]
+50:46
+you [Music]
+
+https://www.youtube.com/watch?v=2JB1_e5wZmU&t=15s
+
+この文章は、関数型プログラミングとドメインモデリングについての講演のトランスクリプトです。主なトピックは以下の通りです：
+1. ドメインモデリングと関数型プログラミングの基本的な概念
+2. プリミティブ型の使用を避け、より具体的な型を使用することの重要性
+3. ドメイン駆動設計（DDD）の原則とアジャイル開発の原則を組み合わせることの利点
+4. 関数型プログラミングにおける型の組み合わせと使用方法
+5. ビジネスルールを型システムにエンコードすることの利点
+具体的には、講演者は、関数型プログラミングにおける型の組み合わせと使用方法を説明し、それがどのようにドメインモデリングに役立つかを示しています。また、ビジネスルールを型システムにエンコードすることで、コードが自己文書化するという考え方を紹介しています。これにより、新しい開発者がビジネスルールを理解するのが容易になり、コードのエラーを減らすことができます。
+
+
+
+
+
+
+私たちが最初に抱えていた問題はすべて解決されました。どの値がオプションで、どこにオプションの概念があるのか、制約は何か。私たちは「string 50」というものや「email address」というものを持っています。もうただの文字列ではありません。どのフィールドがリンクされているかは、それらを別々のグループに分けることでより明確になります。そして、ドメインロジックは明確です。ブールフラグとは異なり、「未検証」や「検証済み」というものがあることが明確にわかります。
+これがまた素晴らしいことに、共通の言語、すなわち普遍的な言語が設計とともに進化しています。私たちは一つのものから始め、今では全く新しいものを持っています。しかし、これは私が言うほど複雑なものではありません。なぜなら、これらは実際の人々が使う実際の言葉だからです。彼らは「個人名」や「検証済みのメール」などというものについて話します。これらはドメインの言葉なので、私たちは実際にはドメインをより良く表現しているだけです。私たちはそれをより複雑にするのではなく、むしろ何かといえばそれをより明確にしています。もちろん、これは互換性のあるコードです。これはあなたのUML図ではありません。
+そして、エリックの本で彼が話しているもう一つのことは、「深い洞察に向けてのリファクタリング」です。これは、ドメインについて何かを学ぶと、それがしばしばあなたが以前には気づかなかった特定の事柄についての全く新しい考え方を開くことを意味します。例えば、私たちは特定の問題を解決するために「検証済みのメール」というものを作り出しました。しかし、一度この「検証済みのメール」という概念を持つと、ドメイン内でそれを他の様々な用途に使うことができるかもしれません。だから、新しい概念を見つけて、「ああ、このルールがあるんだ。私たちはそれについて考えていなかった。パスワードリセットは検証済みのメールにのみ送られるべきだ」と言うことがよくあります。以前は、フラグをチェックし、それが真である場合のみ、実際に処理を行います。しかし、ビジネスルールを忘れてしまい、簡単にミスを犯すことがあります。しかし、新たに「検証済みのメール」という概念を導入することで、パスワードのリセットを送信するには検証済みのメールが必要であると明示的に述べることができます。したがって、ドメインモデリングはより自己文書化的になります。パス
+
+フラグをチェックし、それが真である場合のみ、実際に処理を行います。しかし、ビジネスルールを忘れてしまい、簡単にミスを犯すことがあります。しかし、新たに「検証済みのメール」という概念を導入することで、パスワードのリセットを送信するには検証済みのメールが必要であると明示的に述べることができます。したがって、ドメインモデリングはより自己文書化的になります。パスワードのリセットを送信するには、検証済みのメールが必要であるということが明確になります。そのため、ユニットテストを書く必要もなく、何億ものフラグをチェックする必要もありません。これは自己文書化であり、コンパイル時のユニットテストです。
+
+
+さらに一つ、時代が変わり、我々のコンテキストに「郵便住所」というものを追加するとしましょう。したがって、我々はメールアドレスと郵便住所を持っています。そして、新たなビジネスルールがあります。それは、連絡先はメールアドレスまたは郵便住所を持つ必要があるというものです。つまり、あなたと連絡を取るための少なくとも一つの方法が必要です。しかし、現状の設計では、この要件を満たしていません。なぜなら、現状では、両方のフィールドが必須となっているからです。すべてのものは、それらがオプションであると明示されない限り、常に必須です。では、両方をオプションにしましょう。しかし、それもうまくいきません。なぜなら、両方が欠けている可能性があるからです。
+
+43:45
+話題は検証済みメールと呼ばれるもので、通常はこれらはドメイン内の単語であることを意味します。実際には、
+43:50
+メインをより良く表現しているだけで、複雑にするのではなく、むしろ明確にしているのです。もちろん、これは
+43:59
+互換性のあるコードであり、Mel図ではありません。Ericの本で言及されているもう一つのことは、
+44:05
+より深い洞察力に向けたリファクタリングについてです。これは、ドメインについて何かを学ぶと、以前は
+44:13
+知らなかったり、本当に認識していなかった特定の事柄を考えるための全く新しい道が開かれることを意味します。
+44:19
+たとえば、特定の問題を解決するために検証済みメールと呼ばれるものを作成したばかりですが、
+44:25
+検証済みメールと呼ばれるこの概念を持つようになると、ドメイン内で他のあらゆる用途が見つかるかもしれません。
+44:32
+このように、新しい概念を見つけると、「よし、このルールがある。以前は考えていなかったビジネスルールで、
+44:38
+電子メールを検証するためにのみ区画小切手を送付しなければならないというものだ」と思うようになります。
+44:44
+以前は、フラグをチェックして、それが true に設定されている場合のみ実際に処理を行うようにしていましたが、
+44:51
+間違いを犯してビジネスルールを忘れてしまう可能性が高かったのです。しかし、検証済みメールと呼ばれる
+44:57
+この新しい仕組みがあれば、パスワードリセットの送信には検証済みメールが必要だと言うだけで、ドメイン
+45:04
+モデリングは実際により自己文書化されています。パスワードリセットを送信するには、検証済みメールが必要です。
+45:10
+テストを書く必要もなければ、何十億ものフラグをチェックする必要もないのです。自己文書化されており、
+45:19
+コンパイル時のユニットテストでもあります。さて、もう一つ。時代が変わり、コンテキストに住所、郵便住所を追加します。
+45:25
+電子メールと住所があり、新しいビジネスルールとして、連絡先は電子メールアドレスまたは郵便住所のどちらかを持つ必要があります。
+45:31
+少なくとも 1 つの連絡方法が必要です。
+45:37
+現在の設計は、この要件を満たしていますか？ いいえ、現状ではどちらも必須だからです。
+45:47
+明示的にオプションにしない限り、どちらも必須です。では、どちらもオプションにすればいいのでは？
+45:54
+それもダメです。どちらも欠けている可能性があるからです。
+46:00
+問題は、どのように事実をモデル化するか、このビジネスルールをどのようにモデル化するかということです。
+46:05
+「どちらも欠けていてもいい」とし、特別な検証ロジックを持たせて、どちらも欠けているかどうかをチェックし、
+46:11
+例外をスローさせることもできますが、そんなことはしないはずです。ドメインでモデル化しようとしているわけではなく、
+46:19
+できません。答えは「はい」、もちろんできます。
+46:25
+素晴らしい言葉が "違法状態を表現不可能にする" です。人々に何かをさせてから、検証ロジックや特別なコードチェックを行うのではなく、
+46:32
+最初から起こさせないようにするのがよいのです。では、どうすればいいのか？ ビジネスルールがこちらにあるとしましょう。
+46:37
+考えてみると、電子メールアドレス、郵便住所、またはその両方を持ち得るということです。それが
+46:43
+ビジネスルールです。今、「または」という言葉を使いました。これがヒントです。この
+46:48
+状況をどのようにモデル化するかですが、3 つの可能性があります。電子メールのみ、住所のみ、または両方のいずれかです。
+46:55
+このようにモデル化することで、4 番目のケースをチェックする特別なコードを持つ必要がなくなります。なぜなら、
+47:02
+4 番目のケースはないからです。

@@ -1,0 +1,13 @@
+{
+  "InputFile": "in.txt",
+  "OutputFile": "outputAC.txt",
+  "MaxTokenCount": 500,
+  "MinTokenCount": 400,
+  "Prompts": [
+    {
+      "System": "あなたは翻訳者です。文章を意訳せずにそのまま翻訳してください。返信の最初にメッセージを入れずに、すぐに翻訳で始めてください。タイムラインも数字の行もそのまま残してください。",
+      "User": "以下の文章を和訳してください。\n------\n"
+    }
+  ],
+  "UseAnthropic": true
+}

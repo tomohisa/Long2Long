@@ -1,0 +1,97 @@
+[Music]
+0:11
+thanks everyone for coming this is the main modeling made functional and
+0:18
+hopefully you haven't seen this before otherwise you'll know the answer to all these questions but before we get
+0:24
+started I just actually have a little challenge for you which is here's some
+Challenge
+0:30
+code this is f-sharp code which is what I'll be using the code really doesn't
+0:35
+matter but this is some sort of record type and there's these fields and there's an email address and there's
+0:41
+this flag called is email verified which must be true if you have proved with the own email by
+0:48
+clicking a link in an so if you saw this code in a code of you would you be happy
+0:55
+with it or would you want to change it and if you would want to change it why would you want to change
+1:03
+it's using primitive types good any other
+1:14
+yeah the state is so it's hard to understand using a boolean to represent something much more complex and yeah so
+1:22
+I mean I bit to be honest I probably would have been fine with this a few years ago but I've sort of evolved my
+1:28
+thinking about this kind of design and I'm going to try and explain in this talk I'm going to try to explain why you
+1:36
+know how I've evolved and why you might want to think about changing stuff so
+Domain Modeling Made Functional
+1:41
+domain modeling made functional my name's Scott volution I have a twitter handle and I have F sharp F on profit
+1:49
+comm I'm gonna be using F sharp for all these examples but this is not really about a sharp per se it's about domain
+1:56
+modeling so there's a whole functional programming people there's a whole group of for domain driven design people and
+2:02
+I'm right in the intersection and currently this is a very small intersection because the functional
+2:08
+programming people tend to be quite mathematical and they don't care about domain design and the domain of design
+2:13
+people tend not to be into functional programming so you know hopefully this talk will persuade you these things
+2:19
+actually can go together really really well people think the functional programming you know is good for mathematics and
+Functional Programming
+2:27
+parallel processing and you have to have a PhD in computer science to understand
+2:32
+it but I'm here to tell you that functional programming is really good for boring line of business applications
+2:39
+lobbers I call these blubbers and you know this is things like accounting
+2:45
+inventory management ecommerce boring stuff
+2:50
+basically the stuff that most businesses do and most probably most of you and certainly what I used to do is this is
+2:55
+the your day job this is what you get you make your living doing and I think functional programming is actually really good for this stuff it's not it's
+3:02
+not just good for fancy stuff it's good for boring stuff so I'm gonna try and persuade you that functional programming
+3:08
+and domain design can actually get on together they can actually be friends so
+3:14
+there you go right so let's talk about design I'm just going to tell you my take on why design is important so just
+Design
+3:22
+like any process software developed where is a process there's an input and you do
+3:28
+something and there's an output and we love to talk about the process we love to talk about coding and testing and
+3:36
+what's the best compiler and what's the best editor and vice versus vim versus Emacs and you know TDD versus BDD vus
+3:45
+like we love to talk about all the stuff but if you if you remember the thing you know garbage in garbage out that means
+3:52
+if you have bad inputs you will have bad output so if you can reduce the garbage
+3:59
+coming in then hopefully you can have reduce the garbage coming out if you have bad garbage coming in the best
+4:07
+compiler the best editor the best toolkit the best development processes will not help you
+4:13
+you will still end up delivering something bad so the idea of trying to reduce the garbage coming in I call that
+4:19
+design okay that's just a general word for just trying to understand what's going on before you start building it so
+4:27
+how do we do design right I think that's why we're all here there's confidence to try and figure this out so there's two
+Agile Contribution
+4:32
+parts the first thing I'm going to take from agile contribution is getting rapid feedback and you know doing something
+4:39
+and learning from it as fast as possible don't just take six months to deliver something try and deliver something in
+4:44
+two weeks or one week or a few days and then from DDD I like to think of domain
+4:51
+driven design is actually trying to create a shared mental model that everyone is on the same page everyone is thinking the same way everyone is using
+4:57
+the same words and that shared mental model is also in the code it's not just
+Shared Model
+5:04
+in people's heads so here's a little picture of the shared mental model and we have experts domain experts subject
