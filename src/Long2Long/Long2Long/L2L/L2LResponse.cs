@@ -16,7 +16,6 @@ public record L2LResponse(ImmutableList<L2LResults> Results, string? Error)
                 filename = Path.GetFileNameWithoutExtension(filename) +
                     "." +
                     result.ServiceProvider +
-                    "." +
                     extension;
             }
             // write to file

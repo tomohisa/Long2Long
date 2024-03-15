@@ -9,5 +9,8 @@
       "User": "以下の文章を和訳してください。\n------\n"
     }
   ],
-  "UseAnthropic": true
+  "UseAnthropic": true,
+  "UseAzureOpenAi": false,
+  "UseGemini": false,
+  "UseOpenAi": false
 }
