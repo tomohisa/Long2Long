@@ -157,6 +157,14 @@ public record Long2LongSettings
                 string.Empty
             };
         }
+        if (UseGemini && string.IsNullOrWhiteSpace(GeminiModel))
+        {
+            settings = settings with
+            {
+                GeminiModel = Environment.GetEnvironmentVariable("GEMINI_MODEL") ??
+                "gemini-pro"
+            };
+        }
         return settings;
     }
 }
