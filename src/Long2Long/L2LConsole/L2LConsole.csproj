@@ -12,9 +12,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Update="in.txt">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
         <None Update="in_original.txt">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
