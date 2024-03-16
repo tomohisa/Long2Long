@@ -5,9 +5,14 @@ using Long2Long.Texts;
 using System.Collections.Immutable;
 namespace Long2Long.Runners;
 
-public static class AnthropicRunner
+public class AnthropicRunner
 {
-    public static async Task<L2LResults> RunAsync(SplitInputText inputs, Long2LongSettings settings)
+    private readonly SemaphoreSlim semaphore = new(3);
+    public async Task<L2LResults> RunAsync(
+        SplitInputText inputs,
+        Long2LongSettings settings,
+        Action<string, int> started,
+        Action<string, int, string> ended)
     {
         var result = L2LResults.Default(L2LServiceProvider.Anthropic);
 
@@ -17,16 +22,32 @@ public static class AnthropicRunner
                 Task.Run(
                     async () =>
                     {
-                        var currentMessage = chunk.Text;
-                        var chunkResult = await RunChunkAsync(chunk.Id, currentMessage, settings);
-                        result = result.AppendChunk(chunkResult);
+                        try
+                        {
+                            await semaphore.WaitAsync();
+                            started(result.ServiceProvider.ToString(), chunk.Id);
+                            var currentMessage = chunk.Text;
+                            var chunkResult = await RunChunkAsync(
+                                chunk.Id,
+                                currentMessage,
+                                settings);
+                            result = result.AppendChunk(chunkResult);
+                            ended(
+                                result.ServiceProvider.ToString(),
+                                chunk.Id,
+                                chunkResult.ErrorMessage);
+                        }
+                        finally
+                        {
+                            semaphore.Release();
+                        }
                     })));
 
         await Task.WhenAll(task);
         return result.OrderByChunkId();
     }
 
-    public static Task<L2LChunkResult> RunChunkAsync(
+    public Task<L2LChunkResult> RunChunkAsync(
         int id,
         string text,
         Long2LongSettings settings)
@@ -72,9 +93,9 @@ public static class AnthropicRunner
                 result = result with
                 {
                     Phases = result.Phases.Add(
-                        new L2LPromptResult(string.Empty, e.Message))
+                        new L2LPromptResult(string.Empty, e.Message)),
+                    ErrorMessage = result.ErrorMessage + e.Message + " | "
                 };
-                Console.WriteLine(e);
             }
         }
         return Task.FromResult(result);

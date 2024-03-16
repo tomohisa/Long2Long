@@ -12,31 +12,19 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Update="claudeE2J.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
         <None Update="in.txt">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
         <None Update="in_original.txt">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="azureOpenAiE2J.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-        <None Update="geminiE2J.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-        <None Update="openAiE2J.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-        <None Update="allE2J.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
         <None Update="inshort.txt">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
         <None Update="allQuestion.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="translateE2J.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
     </ItemGroup>

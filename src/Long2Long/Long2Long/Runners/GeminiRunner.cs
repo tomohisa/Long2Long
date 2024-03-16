@@ -4,23 +4,29 @@ using Long2Long.Settings;
 using Long2Long.Texts;
 namespace Long2Long.Runners;
 
-public static class GeminiRunner
+public class GeminiRunner
 {
-    public static async Task<L2LResults> RunAsync(SplitInputText inputs, Long2LongSettings settings)
+    public async Task<L2LResults> RunAsync(
+        SplitInputText inputs,
+        Long2LongSettings settings,
+        Action<string, int> started,
+        Action<string, int, string> ended)
     {
         var result = L2LResults.Default(L2LServiceProvider.Gemini);
 
         foreach (var chunk in inputs.Chunks)
         {
+            started(result.ServiceProvider.ToString(), chunk.Id);
             var currentMessage = chunk.Text;
             var chunkResult = await RunChunkAsync(chunk.Id, currentMessage, settings);
             result = result.AppendChunk(chunkResult);
+            ended(result.ServiceProvider.ToString(), chunk.Id, chunkResult.ErrorMessage);
             await Task.Delay(2000);
         }
         return result.OrderByChunkId();
     }
 
-    public static Task<L2LChunkResult> RunChunkAsync(
+    public Task<L2LChunkResult> RunChunkAsync(
         int id,
         string text,
         Long2LongSettings settings)

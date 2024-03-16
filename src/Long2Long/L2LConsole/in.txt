@@ -1,97 +1,994 @@
-[Music]
-0:11
-thanks everyone for coming this is the main modeling made functional and
+# Aggregates Composition: A new view on Aggregates - Jérémie Chassaing - DDD Europe 2023
+
+https://www.youtube.com/watch?v=72TOhMpEVlA
+
+1,218 views  Mar 6, 2024  AMSTERDAM
+ Domain-Driven Design Europe 2023
+https://dddeurope.com -  
+
+ / ddd_eu   - https://newsletter.dddeurope.com/  
+
+ / domain-driven-design-europe   
+Organised by Aardling (https://aardling.eu/)
+
+Aggregates are generally seen as a blurry modelling tool. The Decider patterns gives us today a precise shape to reflect on. My work on Decider composition gives a new insight on domain driven design and distributed systems.
+
+Jérémie Chassaing has been practicing Domain Driven Design and Continuous Improvement for 10 years as an architect at Availpro, a channel manager for independent hotels, to increase scalability and reliability to match its rapid growth. He's an active member of the F# community. You can also see his blog thinkbeforecoding, a blog dedicated to Domain Driven Design, CQRS and Event Sourcing.
+
+
+0:01
+foreign
 0:18
-hopefully you haven't seen this before otherwise you'll know the answer to all these questions but before we get
-0:24
-started I just actually have a little challenge for you which is here's some
-Challenge
+working at the age Hospitality for 15 years now so it's quite a lot of time
+0:25
+and you can also it's a company that is
 0:30
-code this is f-sharp code which is what I'll be using the code really doesn't
+managing bookings and planning for hotel all around the world
 0:35
-matter but this is some sort of record type and there's these fields and there's an email address and there's
+I am an architect there and I'm applying some of the thing I will show you but
 0:41
-this flag called is email verified which must be true if you have proved with the own email by
-0:48
-clicking a link in an so if you saw this code in a code of you would you be happy
-0:55
-with it or would you want to change it and if you would want to change it why would you want to change
+this is quite recent work and it has not been fully documented yet so you will see here I will do everything
+0:50
+mostly live so it's cool and I think after all you've heard this morning you
+0:56
+want to see some code to learn actually the thing and this is what we will see and today we will talk about aggregate
 1:03
-it's using primitive types good any other
-1:14
-yeah the state is so it's hard to understand using a boolean to represent something much more complex and yeah so
-1:22
-I mean I bit to be honest I probably would have been fine with this a few years ago but I've sort of evolved my
-1:28
-thinking about this kind of design and I'm going to try and explain in this talk I'm going to try to explain why you
-1:36
-know how I've evolved and why you might want to think about changing stuff so
-Domain Modeling Made Functional
-1:41
-domain modeling made functional my name's Scott volution I have a twitter handle and I have F sharp F on profit
-1:49
-comm I'm gonna be using F sharp for all these examples but this is not really about a sharp per se it's about domain
+composition and they use the word aggregate here but we will talk about deciders who know what we decider is
+1:09
+okay not many people so the problem with the aggregate with the aggregate definition is that it's quite fuzzy so
+1:15
+that one of the power of aggregate uh but that's also one of its weakness uh
+1:21
+an aggregate is something that keeps some consistency inside the boundary so
+1:27
+it's yeah there are something inside there is a red outside and what it says is that what is inside need to be
+1:33
+consistent okay so you need to move from one valid state to another valid state or not at all okay but it says nothing
+1:42
+about how you do that and how you manage that but something interesting with this definition is that you have a bundary
+1:48
+what is inside has to be consistent and what he says is that what is outside just doesn't have to doesn't mean that
 1:56
-modeling so there's a whole functional programming people there's a whole group of for domain driven design people and
-2:02
-I'm right in the intersection and currently this is a very small intersection because the functional
-2:08
-programming people tend to be quite mathematical and they don't care about domain design and the domain of design
-2:13
-people tend not to be into functional programming so you know hopefully this talk will persuade you these things
-2:19
-actually can go together really really well people think the functional programming you know is good for mathematics and
-Functional Programming
-2:27
-parallel processing and you have to have a PhD in computer science to understand
+it should be not consistent okay just doesn't have to and this is something
+2:01
+that uh leads in a lot with that regulate a lot of complexity when you
+2:06
+start to design small aggregate is that you have a lot of small pieces Maybe independently and you usually you need
+2:14
+some things like small actors or small services for each aggregate calling the the ones one other
+2:21
+in a complicated way and then at some point you have too much moving Parts too
+2:26
+many parts in parallel in concurrency there is no problem for that but it's a
 2:32
-it but I'm here to tell you that functional programming is really good for boring line of business applications
+lot of infrastructure to run all these small things and something we that could be easier sometimes it's just to take several that
 2:39
-lobbers I call these blubbers and you know this is things like accounting
+work together and group them together as a more manageable all so what you can do
 2:45
-inventory management ecommerce boring stuff
-2:50
-basically the stuff that most businesses do and most probably most of you and certainly what I used to do is this is
-2:55
-the your day job this is what you get you make your living doing and I think functional programming is actually really good for this stuff it's not it's
-3:02
-not just good for fancy stuff it's good for boring stuff so I'm gonna try and persuade you that functional programming
-3:08
-and domain design can actually get on together they can actually be friends so
-3:14
-there you go right so let's talk about design I'm just going to tell you my take on why design is important so just
-Design
+is that you can write add a code that group them but then if at some point in time it's better to split them again you
+2:52
+risk to have some friction because some decisions have been taken in this composition in this grouping and then
+2:59
+when you start to remove it you don't know how to do and here uh I will show
+3:04
+you first what the decider pattern is this is a pattern
+3:10
+that enables you to write Aggregates in the well-defined way so this is a specific
+3:16
+shape for aggregates that has very interesting properties so
 3:22
-like any process software developed where is a process there's an input and you do
-3:28
-something and there's an output and we love to talk about the process we love to talk about coding and testing and
-3:36
-what's the best compiler and what's the best editor and vice versus vim versus Emacs and you know TDD versus BDD vus
-3:45
-like we love to talk about all the stuff but if you if you remember the thing you know garbage in garbage out that means
-3:52
-if you have bad inputs you will have bad output so if you can reduce the garbage
-3:59
-coming in then hopefully you can have reduce the garbage coming out if you have bad garbage coming in the best
-4:07
-compiler the best editor the best toolkit the best development processes will not help you
-4:13
-you will still end up delivering something bad so the idea of trying to reduce the garbage coming in I call that
-4:19
-design okay that's just a general word for just trying to understand what's going on before you start building it so
-4:27
-how do we do design right I think that's why we're all here there's confidence to try and figure this out so there's two
-Agile Contribution
+we are in an even sourcing track so we'll talk about even sourcing but not
+3:29
+exclusively because you can also use the decider pattern to run classic loads
+3:35
+load State safe State way and the super cool thing with that is that you never
+3:40
+need to touch the domain code whatever the persistence you want to to use okay
+3:46
+so let's start with this idea pattern the other side of pattern is quite uh
+3:53
+simple it's here we will I will write it again so that you see how it it works okay
+4:00
+so it's a decider because this is this is something that decide things okay so we
+4:06
+will create a who is fluent in F sharp hey hey some some people yeah this is F
+4:12
+sharp you will you will see it reads mostly like python but with more types things and I will explain on the Fly uh
+4:18
+what's happening so we'll uh create decider type and this decider type is generic meaning
+4:25
+that it can act on different things with specific types that we will find multiple times in the definition the
 4:32
-parts the first thing I'm going to take from agile contribution is getting rapid feedback and you know doing something
-4:39
-and learning from it as fast as possible don't just take six months to deliver something try and deliver something in
-4:44
-two weeks or one week or a few days and then from DDD I like to think of domain
-4:51
-driven design is actually trying to create a shared mental model that everyone is on the same page everyone is thinking the same way everyone is using
-4:57
-the same words and that shared mental model is also in the code it's not just
-Shared Model
+first thing decider will do is that it will receive commands comments that will ask to make a change on the decider this
+4:40
+is the commands we talk about with Aggregates it can also be seen as the
+4:45
+method on your Aggregates that will change the thing in the aggregate but we will put this command in a type and we'll
+4:53
+just use this cut C name inside the definition okay so these
+4:59
+are the comments okay but what an aggregate this idea is doing also it's
 5:04
-in people's heads so here's a little picture of the shared mental model and we have experts domain experts subject
+it's taking decisions and the output of this decision will be events saying this
+5:10
+happened okay so we will have an event type and to manage all this inside
+5:16
+it will need a state to know what is the current state and take the decision so an s okay so short end for command event
+5:26
+and state and the first thing in the decider will be the decide function the decide function is here to say when you
+5:33
+ask me to do this command and I'm in this state here is what happened so
+5:39
+definition is quite straightforward this is a decide function and this function we'll take a command
+5:46
+of type c it will also take a state of Type S and it will it will return events
+5:53
+so e and this is a list okay because it can return 0 one or many
+6:01
+events so this is where the domain logic will take place okay this is where we will
+6:08
+say okay I'm in this state you asked me to do this this is the result this is what happens
+6:13
+of course you can anticipate this is this event can finish in an even store
+6:19
+of course okay second step once when we are in the state and
+6:25
+something happens the state change and in the decider pattern we clearly split
+6:30
+the decision from the state change and we will have for this state change an evolve function
+6:38
+evolve and it says when I'm in this state of Type S and this event happened
+6:44
+of Type e here is the new state of type S
+6:50
+Okay so here I'm writing in F sharp I'm using
+6:56
+immutable data structure so the state is not like some things that change you
+7:01
+have a data structure that contains some values and the evil function will create a new version of this data structure
+7:06
+with a new value and return it okay so this is pure functions will be really easy to reason with and all that you
+7:13
+will see how we write it uh just after uh to be able the evil function texture
+7:21
+state but the question is where do we start so we need an initial state
+7:27
+so initial State like that and this is just a value of Type S that is the
+7:34
+State before anything happens okay and the last thing is that at some point
+7:40
+we will need to to to finish to know that this this idea has finished its job
+7:45
+and that we can archive it or something so we have these terminal function that takes to State and return a Boolean
+7:51
+value uh to say okay it's done right this is a decider
+7:57
+and actually you can take any aggregates on writing with this form
+8:03
+you if you have access to external service you move them up the stack and you put the values
+8:10
+inside the commands as values and your desired function will take everything as
+8:15
+the state all the reaction instead of Performing side effect you will have some events
+8:23
+from the decide function you can use them to perform the side effect from the outside remove all the rest you keep the
+8:29
+logic inside okay this is a shape of a decider and on for
+8:36
+the last part I will need something that I will explain later but I will need to to make a dissociation between the state
+8:44
+that is on the output on the input on the state on the output so everywhere the state is on the left
+8:50
+I will call it s i on everywhere it's on the right I will call it
+8:56
+so and we can just create another type for short end which is
+9:01
+the same but with the same state on the input and the output uh yes like that
+9:09
+it's a decider of c e S and S this is a
+9:15
+short n when the state on the input on the output is the same okay so know that we have a decider let's
+9:22
+write some domain code so we will take a very simple domain we have a light bulb okay and we have a cat
+9:29
+right so the light bulb you can fit it in the in the blog in the socket
+9:35
+and it will have a specific number of usage for blowing up right on the cat it
+9:43
+just has two states it can be a weight awake or sleeping and you can wake it up
+9:49
+or get it to sleep okay so our first example is here so document
+9:56
+here is the type command and so this kind of type is called the
+10:03
+Union uh so the command can be as three kgs
+10:08
+which is either fit with the feed value which contains the max uses integer or
+10:15
+it can be a switch on or switch off okay so the way to implement it in other
+10:21
+languages usually you can create a base class and having three classes the deriving from from this base class and
+10:28
+then you can match on the type and do the thing okay or you can use Dynamic dispatch or anything but in our case
+10:34
+it's this is a single type with three cases okay the event
+10:41
+are quite the same as the users but in the past tense right so we have a fit
+10:47
+and we have a fitted event we have a switch on Switched on switch off switched off but we have an other
+10:53
+event which is blue uh when the the verb just blue
+11:01
+the status can be on on on on or off and the state is also a union
+11:08
+it can be not fitted working with the statues and the remaining uses and it can be
+11:15
+blown right okay so usually you don't start like that you go
+11:21
+using a tdd to to Define what your state is but the comment on the event
+11:28
+come from the specification the state is more like implementation details so the
+11:33
+decide function here as we said must take a command on the state so what you ask the bulb to do on
+11:40
+in what state it is so we just match the two values and return some event for each right so
+11:48
+if it's not fitted then we send it a feed command it will return fitted with
+11:53
+the max uses indicated if it's we ask we to fit but the state is not not fitted
+12:02
+it will fail when you ask it to switch in on uh while
+12:08
+it's working and the status is off it will be
+12:13
+switched on okay but this is only the case when the remaining uses are larger
+12:19
+than zero right because when it's zero we go to the other line and it's earned
+12:24
+we ask it although the current state is off it's just blue and the last one is
+12:30
+you switch it off while it's on and it will say it switch off in all other cases it does nothing right
+12:38
+so this is this the decision for this thing right
+12:43
+so this is a very simple decider uh in the case of a board game that I wrote I
+12:49
+have a decider which is 2 000 lines long of F sharp which is quite test language
+12:54
+so yeah and it has been converted to uh 11
+13:00
+000 lines of PHP so yeah you can imagine the the thing
+13:05
+um so uh after the decide function we need we need an evolve function
+13:10
+and this function is just changing the state based on what happens so it takes
+13:16
+the state on an event and will return the state if it's not fitted only just fitted no
+13:21
+it's working with the status off and the remaining uses are Max uses
+13:27
+if it's working on it that's been switched on we change the statues and remove one from the remaining uses if
+13:34
+it's working and switch off it's off and if it's blue it's a transition to the blown state in
+13:41
+other cases it's remaining the in the same state right the initial state is not fitted
+13:48
+and the e-terminal state is statically equal to blown right and now I can just
+13:55
+create the structure by taking the function and put it in put it put them in the data structure
+14:01
+right so the cool thing is that this decider is very easy to test so I wrote
+14:09
+here function given when which deck you decider
+14:15
+right on what it does it takes its return a function that takes some event on the
+14:22
+command okay it takes these events
+14:27
+and pass it to the list.fold list.fold is taking your list
+14:33
+initial value which is the decider initial State okay and it takes the first element in the list and called the
+14:40
+function that is passed here is this idea that evolve detect the result takes the next the next item in the list and
+14:48
+do the same so after the second line we get the initial state
+14:58
+then the state after the first event after the second event and the last event so we get the current state right
+15:04
+and so this is a pipe forward thing here this current state is passed to the
+15:12
+decider the decide function with the command and the result is a list of events right
+15:17
+so I just create a small operator which is a equal bank which says assert okay
+15:24
+let's check that X actually is equal to expected on print something
+15:30
+and no I can also create this small Arrow operator
+15:36
+simple row that is given when with the bulk decider so my tests are here when nothing
+15:43
+happened before and I fit the bulb with Max user to five the result is one event
+15:50
+which is fitted with maxus 5. when the bulb has been fitted and you switch in a
+15:55
+switch it on it's switched on etc etc so the tests are here and very
+16:01
+easy to to read so the last one is checking that if you oops
+16:07
+if you start it with maxus one and switch it on off and then you try to switch it on again the resulting event
+16:14
+is blue okay cool thing here with this with this this test is that the state
+16:20
+never appears in the state so I can refactor the state as much as I want I never have to change the test this is
+16:27
+pure Behavior driven test and you have seen all the framework I'm
+16:32
+using like the SE lines okay this is my test framework
+16:37
+to write this okay uh so this build thing I can there will be
+16:44
+the cat after this thing the first thing I can do with this you will say okay you can test it but can I run it right so we
+16:52
+can run it like this uh we'll create a smaller module in memory
+16:58
+and create an instance of it with in
+17:03
+memory in memory with my bulb decider
+17:10
+and now I can send it some commands like for instance fit
+17:16
+.fit and with the value
+17:21
+dot Max uses is five okay and after that we can call it with
+17:29
+another command which is a switch on
+17:35
+and same but we switch off like that so I take my decider
+17:42
+I didn't run the code before so it's not working of course here
+17:51
+perfect and so just to show you that it's
+17:56
+working I can run all the tests and
+18:02
+we should get green freeware okay so I take my decider here okay I create
+18:10
+an instant of it uh an instance to run it and you see that what I get is a
+18:16
+function that takes a command and returns and evenly so I will pass some
+18:22
+to some commands to this function here and it says okay the result is it was
+18:27
+fitted with a Max use of five if I try it again I get an exception because you cannot fit it twice right but now I can
+18:34
+switch it on okay switch on I can try to switch it on again nothing happens this
+18:39
+is what we expect I switch it switch it off it switched off on off on Earth
+18:47
+on earth once again and Bloom okay I
+18:53
+know I can try anything nothing happens anymore okay so when you have a decider you can just run
+18:59
+it like that I don't need an even store or anything I can just turn it I will show the cut just after the cool thing
+19:05
+with that I can take the code I'll show you and I can for instance we have a new service
+19:12
+that we that we want to to to to implement and first thing I do is I
+19:19
+write my my domain code as a decider and
+19:25
+I use this in memory function to run it I just put
+19:30
+it behind your service and I put it into staging and people can start to play with it there is no persistence no event
+19:36
+store no database but you can already test the domain logic from here okay and
+19:43
+what is the magic for this in memory function it's very simple what it does it says
+19:48
+give me your decider okay and I create a mutable variable
+19:53
+called state which is equal to the decider initial state
+19:58
+right and then I return a function that takes as a command and it will call the decide function
+20:04
+with the command on the state I get some events with this event I use the level function
+20:11
+on the current state to fold them and get a new current state that I store in the state again and just return the list
+20:18
+of events that I computed right this idea running in Murray the cool
+20:26
+thing with that is that you can take any domain logic written as a decider pass it to this function and it will run like
+20:32
+that I don't need to rewrite the same blah blah blah running instantiate the thing
+20:39
+because all deciders have the same shape I can write this code once and use it for any domain logic
+20:45
+okay so next step no at some point I will so to test that
+20:52
+it also work with something different I can test it with the cat so
+20:58
+so I will not show the code for the cat because it says even simpler decider which can be awakened and it's just
+21:05
+doing the thing okay so I take Creator in memory with the cat decider
+21:11
+and I can cat dot wake up
+21:18
+no we see here or I can get to sleep right so and
+21:28
+instantiate it when I tried it was already woke up awake so if I try to
+21:35
+wake him up and nothing happens but I get it to sleep wake up go to sleep I try to go to sleep again nothing happens
+21:41
+and all that okay it's working and I'm just running the decider in memory no the thing we want
+21:48
+to do is that we want to persist uh
+21:54
+the state this way if we stop everything and we will start we will be in the same
+22:00
+in the same position um the thing usually is that if you start with thing in memory and then you
+22:06
+want to implement it with the database you get a bit in trouble because you
+22:13
+will have to change your code here we will
+22:18
+just do something like that module state
+22:24
+and we will create so it states that run and for this I need to give a decider a
+22:34
+bird decider and what I will do is that I also will give a serializer
+22:43
+state serializer and the two last things I need to give is the container name
+22:49
+this is a bulb and this is instance one okay like that
+22:55
+I know I can just do the same thing as before sending command to this function
+23:01
+and Magic here this is the ESC KV this
+23:06
+is my toy implementation of key value store and even store
+23:12
+only for educational purpose okay this is stated in the lessons you can use it if you want for your own demonstration
+23:18
+right but only if you don't make money with it or you contact me and you see and never
+23:26
+use it in production because it's not done for that it's really something to show how it works
+23:33
+there is a client library to use eskv uh
+23:38
+which has all the Primitives you find in any client for the events to her and for
+23:46
+key value stores right but I try to reduce it to reduce at the maximum the
+23:52
+complexity of demos okay so you do the same for your own infrastructure uh you
+23:58
+you try to create the same kind of client API that I created for eskv and
+24:04
+you will be able to do everything but in your production right but don't use a eskv for production
+24:10
+uh the cool thing is that you it's very easy to install and all that you will look at my um and my GitHub and you will
+24:17
+find it so now I have an instance and I fit the bulb and as you can see just appeared here in the key Value Store in
+24:24
+the container bulb key one the value is of 5. cool you know if I try to build do fit
+24:33
+it again it fails I can switch it on off and off on if I try on again nothing happens off
+24:41
+on off on off on on the next call the state is blowing right so you see
+24:48
+uh and as you can see I just took the same decider and run it and I saved the state
+24:56
+so it will tell me yeah but we are here for even sourcing it's not even sourcing we are saving the state but the cool
+25:01
+thing is that we will switch to even sourcing without changing the domain code either right so follow with me
+25:07
+what's happening inside the state run function so it needs a decider on the serializer
+25:15
+a serializer is just a pair of cellulitis and deserialized function right uh the serialized on this ILS function
+25:23
+take your state and return the string or take a string and return the state and the container is key is just to to know
+25:30
+where to store it in eskv so starting the skv is is really easy
+25:37
+you create a client right and then what we have is these two
+25:45
+functions this first one is a try load it takes a decile this iulized function
+25:50
+the default value and the container in the key and it will call try load with the container on the key to get the
+25:56
+string that is contained for this key okay I get a result if the key exists I take
+26:02
+the value and this I realize it if it doesn't exist I take the default value now I have a value and I will result the
+26:08
+value and the e-tag for this key so the e-tag is useful
+26:14
+because the attack will change on each version of the document right and when I
+26:19
+will save the document again I will check that the document has not changed
+26:25
+between the moment I loaded it and the moment I save it right so the save is
+26:31
+equally easy Texas cellular laser the container the key the state and the tag and it called
+26:39
+try save uh with the key and it's a realize the
+26:44
+state to a string it pathway tag if the state has changed I will get null and I
+26:50
+can fail if the e-tag is not null I get a new tag but I will not use it so I
+26:57
+just drop it so um know that I have these two very easy
+27:03
+function I can use just use them so I use the tryload function to get the
+27:10
+current state and the attack from the database now I can call the D type function with the command that has been provided to
+27:17
+the function on the state I just loaded I get some events I use list fold with the evil function to get the new state
+27:25
+right and I just save it okay I return the events and this is
+27:31
+working and this is working for any designer right and this version as controlled optimistic concurrency
+27:38
+checking because of the attack so if some other instance uh is messing with the state I will
+27:46
+detect it between the load and the Save which should be super short anyway the other thing is that it's very easy
+27:52
+to change this to keep state in memory I can create also a mutable variable load the state up front and then for each
+28:00
+command I keep the e-tag for each command I will compute a new state try to save it if
+28:08
+the tag has changed I will just reload the state from the database and each time I will update so I reload only if I
+28:15
+have a conflict with the current state of the database so and once again I don't need to know
+28:22
+anything about what's inside this designer just to know that it's a decider it can run for all your domain
+28:30
+logic exactly the same way so I just need several versions of this run to
+28:35
+implement the different loading saving keeping in memory patterns but the decided I don't care
+28:43
+uh it's also working for cats of course let's see stat dot run
+28:52
+cat dot decider I will just take the uh the cat
+28:59
+state serializer and I will
+29:05
+call it cat one and I have my two functions my two commands here
+29:11
+yeah I wake it up it's awake I get it to sleep it's asleep if it's already asleep
+29:17
+nothing happened and extra extra okay so super cool I have a cat on the light
+29:23
+bulbs that are working now the question is but how do you use these deciders for
+29:28
+even sourcing oh it's actually very easy module even
+29:34
+sourcing so let B and I will say even sourcing
+29:42
+dot run with my bulb decider
+29:48
+bulb event serializer [Music]
+29:54
+I don't have container on the streams yet but it will come Monday
+30:00
+up up like that so I get it
+30:06
+oh in my streams here I see this build one stream the first event is fitted if
+30:12
+I try to run it again bam no I cannot I can switch it on off on off so you can
+30:19
+see also the event uh I can switch on if I do it again nothing
+30:24
+happened on off on under that time it's just blue and
+30:30
+nothing happened anymore right so once again no I'm using even sourcing
+30:37
+uh but totally without uh totally without a
+30:42
+changing the code so for the infrastructure for this is just
+30:48
+I load the events with my data laser from the stream so there is an easy API
+30:54
+in eskave that just returns all the events from a stream I get the event on an expected version
+31:01
+this is the current version of the Stream I fold all my events using the evil
+31:06
+function I get the current state I pass the student state to the decide function with the command I get the new events
+31:13
+you follow it's okay so I get the new events and then I open this event to the
+31:18
+Stream passing the expected version if someone added new events to the stream in
+31:24
+between it will be detected and I can do something more specific right
+31:31
+so this is even sourcing now cool it's also working for the cat of course as you can guess
+31:37
+but no the thing is that uh I have this small decider and I
+31:46
+maybe I want to just run one thing and not two things like not two apis or
+31:52
+something an API that will have things for the cat thing for the for the bulb and I want to put them
+32:00
+together because uh in some ways this is so small they go together
+32:05
+uh what what the first to to create all this infrastructure to run both okay
+32:11
+so I have two decider is it possible to create a single decider
+32:18
+and actually yes and this is where it gets interesting the thing here
+32:24
+so I will go a bit here and we will create a compost
+32:29
+function so this will be a bit harder to follow this is the code but I will not show you
+32:36
+we will write it Okay so the only thing I will copy is the first
+32:43
+line because it's a bit long to type the first two lines
+32:49
+up like that so uh I need I want to write a compose
+32:59
+function that will take an X decider okay that text comment of type CX
+33:05
+that will return events of types e x and have a state of type SX okay and I have
+33:11
+a second d y decider with the Cy ey Sy and what I want
+33:18
+is a decideration can do both so it can take commands either
+33:25
+from the first one the one on the left or for the second one the one on the right right and
+33:32
+the decision taken from there for for from this decider can either be uh an
+33:39
+event for the one on the left or an event from the white run one on the right okay
+33:45
+and what is the state the state is just a pair of both States okay
+33:52
+this is George repair the state of the bulb on the state of the cat okay so this is what the signature of
+33:58
+this function is saying the either type is not a standard type in F sharp but I just wrote it here so it's either
+34:08
+uh with two two type parameters and when the left side is of Type L on the right
+34:14
+side is of type error so returning here the first thing we need
+34:21
+in our decider is a decide function okay and as you decide function it will
+34:28
+take a command I will say CMD for short and it will
+34:35
+take a state and we know that the decider we want to provide its state is a pair of State okay so we
+34:42
+will directly call the left part SX and the right part is why okay so it
+34:51
+will get one pair and I call the left part of the pair SX on the right by part
+34:56
+of the state Sy the command can be either a common for x
+35:01
+or a command for a y so I will test it with a match
+35:07
+on the command and if it's for the left we will call it CX recommend for X okay
+35:15
+and no we know that we have a command for the left part so we will take the left decider and call the D side
+35:23
+function from the last decider so the left decider is the X and I will call this side this digital
+35:30
+except CX as a parameter on SX as a parameter okay and this will return
+35:36
+events for the it will return events of the
+35:44
+left decider so to be able to
+35:49
+make it compatible with the others I will say they are on the left so I will
+35:54
+just use I will just say there are on the left on
+35:59
+all the events okay like that four if it's the right it will be equally
+36:06
+easy so if it's the right I will call it Cy I
+36:12
+will take the right decider the Y pass it the command with the state for the right
+36:20
+and just say okay it's an event on the right
+36:25
+and this is my decide function now what I can do is eval function so the function as you remember is
+36:32
+taking a state that our state is still in two parts SX and s y and we have an
+36:37
+event here so the thing is that we need to return a new state that will be computed with the
+36:44
+2D slider we have so we will again match but this time we haven't uh to see if
+36:52
+it's an event for the left or the right if it's for the left we call it e x
+36:58
+and what we can call is the evil function from the DX decider
+37:04
+with the state for x though even for x and what we get is
+37:10
+just the new state for the left part so I will just put the same value for the
+37:15
+right part like that okay but if it's for the right
+37:23
+it will be an event for y I will use the Y evolve function uh with the state for right for y and
+37:33
+the event and I will keep the same value on the left
+37:38
+okay uh yes uh where yes why like that uh
+37:49
+uh the next thing is the initial state initial state
+37:57
+the initial state is easy because it will be the initial state from the DX decider on the left
+38:04
+and the initial state of the d y decider on the right and
+38:09
+lastly the is terminal function this is a function that will take a
+38:15
+state so we will call SX the left pattern as why the right part and we'll just say test that SX is this terminal
+38:22
+state on the X on the left decider and that Sy is the
+38:31
+terminal State on the right decider like that and as you see yeah it it
+38:37
+works right so this is awesome I know we can create a bulb
+38:43
+and cat a cat and bulb uh decider let's try it
+38:49
+you'll chat
+38:55
+and bulb so let CNB it will be shorter c and b
+39:03
+and to create so to create the decider uh I will
+39:10
+just created it here let's get and verb
+39:15
+equal and I will use a decider dot compose function to take the cat decider
+39:22
+and the bulb decider I know I get a cation belt decider
+39:28
+so the thing is that you can apply this compose function to any decider you will write with your on-demand logic of
+39:33
+course not just with the cotton bulb it will work okay and we can run it in memory
+39:39
+CNB in memory
+39:45
+and I will need the cat and bulb decider here right and then I can give it some
+39:55
+some function so I already wrote this to gain some time so here I can so to to
+40:05
+pass a comment to the cat I have to say that it's on the left okay because this
+40:11
+slider is only accepting cat command on the left and bulb command on the right
+40:17
+so I wake up look at nothing happens because it's already awake you go to sleep awake left go to sleep and then I
+40:25
+can fit the bulb switch on switch off on off right and the cool thing is that
+40:31
+I can also run it not in memory but uh as in
+40:38
+with the state so I will just go here uh
+40:45
+this one yes no this is not the one I wanted in
+40:50
+memory card on I have a lot of things
+41:00
+so the thing is that here I also compose a serializer together to be able to take two serializer and make a single one
+41:07
+and then I can do this and as you can see on the left of the pipe on the right
+41:13
+you have the state of the skirt and on the right state of the of the bulb
+41:18
+so I can switch on off and go to sleep awake
+41:24
+switch on switch off on off on off and it just blown right
+41:33
+so uh I can take two aggregate two deciders on the other single decider but
+41:40
+what I can do now is that I can take another decided and combine it with this one right
+41:46
+and the fun thing is that we can also create a neutral decider like this which is a decider that you
+41:53
+cannot use and that does nothing why because the command is void which is a
+41:59
+type which has no value so you cannot create a value of it so you cannot create a command of type void and it has
+42:05
+no event because it's of type void until that it has a single state which is the value of unit which has a single value
+42:12
+which is a parenthesis parenthesis right and the decide function just says
+42:18
+whatever you ask me I return nothing when you ask me to evolve I keep the
+42:24
+same state my initial state is the only value I have which is boundary is bound to this and it's always terminal right
+42:31
+no I if I take a decider and I composite with this I get another decider but
+42:38
+which can do exactly the same thing as the this later I composed with it right so actually this is a neutral element
+42:45
+for the operation which says that the operation is monoidal
+42:53
+because we have different shape but that those exactly just do the same thing something that is interesting also is
+43:00
+that we we when you have a cat uh you can run a cat but if you want to run many cats it can be cumbersome to
+43:07
+combine them all together as a single decider so there is a mini operator which take a decider and will return a
+43:14
+decider for many instances of the same thing right so the thing is that in this decider
+43:20
+uh each of the instance will have a string identifier okay you can choose a
+43:25
+different type of a string but it was easier for the demo uh and each time the
+43:31
+command will be the name of the thing and the command the event will be the name of the thing
+43:37
+on the event and the state will be a map a dictionary of string and the state of
+43:42
+this thing right and so the decide function it will receive a command which
+43:48
+is actually an identifier and the command for the inside decider on all
+43:55
+the states so we try to find the state in the map and if we cannot find it we return the initial state
+44:00
+we have a state we call the decide function we get some event and we just add the ID on each event and no we can
+44:08
+decide for many things okay the evil function is quite similar we have an idea with the event so we try
+44:16
+to find the state or we use the initial State and we use the evil function to compute the new state and we replace the
+44:22
+replace the state for this identifier in the in the dictionary the initial status is an empty map
+44:30
+and there isn't this terminal function check that all the values in the map are
+44:36
+terminal for the decider and with this I can run many cats so I will run many
+44:43
+cats uh kids a bit further so many cats uh I
+44:50
+will run it with uh with the state so the first cat is called bullet
+44:55
+because this is the the name of of my cat Okay uh
+45:00
+uh and when I put it to sleep you can see that the state is a bullet is asleep and I can wake it up and awake either
+45:09
+cat I know and I can wake it and with a single decider I can run many cats
+45:15
+next interesting things also is that I have a process so a process is a state machine and the
+45:21
+process will I have four minutes left process will evolve so a process listen
+45:27
+to mostly events will emit commands and have a inner states so we have an evil
+45:34
+function that is similar to the other one the react function says when I'm in in
+45:40
+this new state and this event just offshore is this here is the list of commands that we must send
+45:47
+resume is when you just resume the process after a crash it just Returns
+45:53
+the thing it has an initial date also it's terminal also I have every process that when a light
+46:02
+is switched on it will wake up the cat and we will know that the cat is like awake because we
+46:10
+will see the woke up event so my state is either idle the
+46:18
+process is just waiting for the light to switch on or waking up it's sending the command but it does not the confirmation
+46:24
+yet that it has been done so it will stay in this stage and when we
+46:30
+receive the workout event we will go in idle State again so it looks a bit like
+46:35
+the decider but with different function so we switched on a waking up when it's woke up it will go to idle
+46:42
+state when it's waking up in because we
+46:47
+switched on it will return backup and the initial state is idle
+46:53
+and the cool thing with that is that we can combine this process with the decider so I'll do
+47:00
+with that we do that the thing is that we take a process
+47:06
+on the decider and this decider will be already the combination of the cat on
+47:12
+the bulb okay and I will take this this uh this side there on my
+47:18
+process that will wake up the cat when the light switch on okay so it doesn't
+47:24
+get the cat to sleep when it switch off of course because the cat never go to sleep when you want
+47:31
+um so uh it has a decide function so the thing is I get a function and I get the
+47:36
+state for the decider on the process and what I will do is that I will take
+47:42
+this command right and pass it to this Loop so this
+47:47
+Loop will accumulate events over several commands because the thing is that we have an
+47:54
+input command but the process May trigger other comments that will produce
+48:00
+a new state so the first thing is that if I still have common to process I call it command this is a year document
+48:07
+highlighting and I compute the event for this command in my decider
+48:13
+and this event I will use my process to collect new commands for each event so
+48:20
+this is the collect folder function what it does it says okay so I'm in a
+48:26
+state I have some events and I have nothing to return uh uh and when I have an event I will
+48:32
+evolve the process first okay with my current state on the the list of events
+48:39
+I get a new state I call react on the process that can
+48:45
+return me one or multiple comments and I put them in my result and then I take the next event on my new
+48:52
+state and do it again until I have no event to process and in the end I have the the list of all the comments I need
+49:00
+to to to to to process after and what I do is that once I have all
+49:07
+this new command I will just put it in the list and do it again it will go through the
+49:12
+deciders that will produce new events that may produce new events that go to
+49:18
+the process that could produce new commands but eventually there will be no
+49:25
+more common to send because everything in the right State and at that time I have collected all the events generated
+49:31
+by the decider okay so now I can use this combine
+49:37
+with decider and go quickly to show you how it works
+49:44
+so here I will combine the uh
+49:49
+uh yes I know yeah adapted process is here so this is just a small helper to
+49:55
+to convert the event from the decider to the process of the rest
+50:01
+yes I need to run both at the same time yes almost
+50:06
+this is my new version of this of course it will
+50:12
+not work demo effect ah [Music]
+50:19
+why okay [Laughter]
+50:25
+yes I will just run everything because yeah I made some change on the way
+50:33
+uh [Music]
+50:40
+with process yes and here
+50:50
+like that no okay no it's not working okay so I explained
+50:55
+what is happening so when I do this uh I take my combined decider with a cat
+51:03
+on the bulb I take my process and I get a new decider right
+51:09
+so this decider I can run it with any of the other function I wrote before but no
+51:15
+when I get the cat to sleep and then I switch the light on I get both the light
+51:22
+is switched on and look at woke up right so
+51:30
+I had two deciders that I could I can still run
+51:37
+independently using two different run functions I have a process that can also
+51:44
+run independently using a process run function I can Bridge everything with an event store and all that but again also
+51:50
+using just this few line of code put them together on every single thing okay
+51:55
+but I don't need to change the code either for the cat for the bulb or for
+52:02
+the process to move from one setting to another I can just
+52:08
+glue them with standard operators and get all the things running as a single unit okay so the interesting idea
+52:16
+is that you instead of thinking what should be the side of my uh aggregate
+52:21
+you can think I will Design the small thing I will Design the processor glue that from them together and then I will
+52:28
+think how I run this right use the operator I've shown
+52:33
+compose uh on the combined with the decider and all that and you get two
+52:39
+single thing that is still a decider and that you can run in memory with the state database or with an even store the
+52:48
+same way you're free to choose and you can always choose letter and you can move from one
+52:55
+version to the other like starting in memory State and then even sourcing and
+53:01
+that's just the same code so I think my time is over so thank you
+53:06
+very much I hope that you like it [Music]

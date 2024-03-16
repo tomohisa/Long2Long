@@ -13,6 +13,7 @@ public record L2LResults(
         string.Empty,
         string.Empty);
 
+
     public L2LResults AppendChunk(L2LChunkResult chunk) =>
         this with { Results = Results.Add(chunk) };
     public L2LResults OrderByChunkId() =>

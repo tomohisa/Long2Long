@@ -97,6 +97,14 @@ public record Long2LongSettings
                 string.Empty
             };
         }
+        if (UseAnthropic && string.IsNullOrWhiteSpace(AnthropicModel))
+        {
+            settings = settings with
+            {
+                AnthropicModel = Environment.GetEnvironmentVariable("ANTHROPIC_MODEL") ??
+                "claude-3-opus-20240229"
+            };
+        }
         if (UseAzureOpenAi && string.IsNullOrWhiteSpace(AzureOpenAiUrl))
         {
             settings = settings with
@@ -127,6 +135,14 @@ public record Long2LongSettings
             {
                 OpenAiApiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY") ??
                 string.Empty
+            };
+        }
+        if (UseOpenAi && string.IsNullOrWhiteSpace(OpenAiModel))
+        {
+            settings = settings with
+            {
+                OpenAiModel = Environment.GetEnvironmentVariable("OPENAI_MODEL") ??
+                "gpt-4-turbo-preview"
             };
         }
         if (UseGemini && string.IsNullOrWhiteSpace(GeminiApiKey))
