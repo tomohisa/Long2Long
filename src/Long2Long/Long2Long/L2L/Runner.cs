@@ -4,11 +4,6 @@ namespace Long2Long.L2L;
 
 public class Runner
 {
-    public enum EventType
-    {
-        ReportTotalNumber, StartEvent, EndEvent
-    }
-
     public static async Task<L2LResponse> RunAsync(
         L2LRequest request,
         Action<int> reportTotal,
@@ -79,5 +74,26 @@ public class Runner
         await Task.WhenAll(tasks);
 
         return new L2LResponse(results.ToImmutableList(), null);
+    }
+
+    // generic method try to get L2LChunkResult and if error mssage is not empty, retry
+
+    public static async Task<L2LChunkResult> RunChunkWithRetryAsync(
+        int maxExecuteCount,
+        Func<Task<L2LChunkResult>> runner)
+    {
+        var executeCount = 1;
+        L2LChunkResult result;
+        do
+        {
+            result = await runner();
+            if (string.IsNullOrEmpty(result.ErrorMessage))
+            {
+                return result;
+            }
+            Console.WriteLine($"Error: {result.ErrorMessage} - retrying...");
+            executeCount++;
+        } while (executeCount <= maxExecuteCount);
+        return result;
     }
 }

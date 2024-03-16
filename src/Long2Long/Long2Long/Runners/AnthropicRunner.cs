@@ -7,7 +7,7 @@ namespace Long2Long.Runners;
 
 public class AnthropicRunner
 {
-    private readonly SemaphoreSlim semaphore = new(2);
+    private readonly SemaphoreSlim semaphore = new(3);
     public async Task<L2LResults> RunAsync(
         SplitInputText inputs,
         Long2LongSettings settings,
@@ -27,10 +27,11 @@ public class AnthropicRunner
                             await semaphore.WaitAsync();
                             started(result.ServiceProvider.ToString(), chunk.Id);
                             var currentMessage = chunk.Text;
-                            var chunkResult = await RunChunkAsync(
-                                chunk.Id,
-                                currentMessage,
-                                settings);
+
+                            var chunkResult = await Runner.RunChunkWithRetryAsync(
+                                3,
+                                () => RunChunkAsync(chunk.Id, currentMessage, settings));
+
                             result = result.AppendChunk(chunkResult);
                             ended(
                                 result.ServiceProvider.ToString(),
@@ -39,6 +40,7 @@ public class AnthropicRunner
                         }
                         finally
                         {
+                            await Task.Delay(1000);
                             semaphore.Release();
                         }
                     })));

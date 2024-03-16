@@ -1,9 +1,8 @@
+using Azure.AI.OpenAI;
+using Azure.Core;
 using Long2Long.L2L;
 using Long2Long.Settings;
 using Long2Long.Texts;
-using OpenAI;
-using OpenAI.Managers;
-using OpenAI.ObjectModels.RequestModels;
 using System.Collections.Immutable;
 namespace Long2Long.Runners;
 
@@ -29,10 +28,11 @@ public class OpenAiRunner
                             await semaphore.WaitAsync();
                             started(result.ServiceProvider.ToString(), chunk.Id);
                             var currentMessage = chunk.Text;
-                            var chunkResult = await RunChunkAsync(
-                                chunk.Id,
-                                currentMessage,
-                                settings);
+
+                            var chunkResult = await Runner.RunChunkWithRetryAsync(
+                                3,
+                                () => RunChunkAsync(chunk.Id, currentMessage, settings));
+
                             result = result.AppendChunk(chunkResult);
                             ended(
                                 result.ServiceProvider.ToString(),
@@ -41,6 +41,7 @@ public class OpenAiRunner
                         }
                         finally
                         {
+                            await Task.Delay(1000);
                             semaphore.Release();
                         }
                     })));
@@ -63,32 +64,33 @@ public class OpenAiRunner
         {
             return Task.FromResult(result with { ErrorMessage = "OpenAiModel が入力されていません。" });
         }
-        var openAiClient = new OpenAIService(
-            new OpenAiOptions
-                { ApiKey = settings.OpenAiApiKey });
+        var clientOptions = new OpenAIClientOptions
+        {
+            Retry =
+            {
+                NetworkTimeout = TimeSpan.FromMinutes(5), Mode = RetryMode.Exponential,
+                MaxRetries = 2
+            }
+        };
+        var openAiClient = new OpenAIClient(settings.OpenAiApiKey, clientOptions);
 
         foreach (var prompt in settings.Prompts)
         {
             try
             {
-                var message = openAiClient.ChatCompletion.CreateCompletion(
-                        new ChatCompletionCreateRequest
-                        {
-                            Messages = new List<ChatMessage>
-                            {
-                                ChatMessage.FromSystem(prompt.System),
-                                ChatMessage.FromUser(prompt.User + text)
-                            },
-                            Model = settings.OpenAiModel
-                        })
-                    .Result;
+                var options = new ChatCompletionsOptions();
+                options.DeploymentName = settings.OpenAiModel;
+                options.Messages.Add(new ChatRequestSystemMessage(prompt.System));
+                options.Messages.Add(new ChatRequestUserMessage(prompt.User + text));
 
+                var message = openAiClient.GetChatCompletions(options);
+                // get all stream
                 result = result with
                 {
                     Phases = result.Phases.Add(
-                        L2LPromptResult.FromOpenAiMessageResult(message, prompt.Id))
+                        L2LPromptResult.FromAzureOpenAiMessageResult(message, prompt.Id))
                 };
-                text = message?.Choices.FirstOrDefault()?.Message.Content ?? string.Empty;
+                text = message?.Value.Choices.FirstOrDefault()?.Message.Content ?? string.Empty;
             }
             catch (Exception e)
             {
