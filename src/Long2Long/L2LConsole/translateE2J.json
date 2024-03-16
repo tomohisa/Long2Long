@@ -1,16 +1,25 @@
 {
-  "InputFile": "in_original.txt",
-  "OutputFile": "outputAOAI_original.txt",
-  "MaxTokenCount": 1000,
-  "MinTokenCount": 800,
+  "InputFile": "in.txt",
+  "OutputFile": "Aggregates Composition A new view.md",
+  "MaxTokenCount": 500,
+  "MinTokenCount": 400,
   "Prompts": [
     {
       "System": "あなたは翻訳者です。文章を意訳せずにそのまま翻訳してください。返信の最初にメッセージを入れずに、すぐに翻訳で始めてください。タイムラインも数字の行もそのまま残してください。",
       "User": "以下の文章を和訳してください。\n------\n"
     }
   ],
-  "UseAnthropic": false,
+  "UseAnthropic": true,
   "UseAzureOpenAi": true,
-  "UseGemini": false,
-  "UseOpenAi": false
+  "UseGemini": true,
+  "UseOpenAi": true,
+  "AnthropicModel": "",
+  "AnthropicApiKey": "",
+  "AzureOpenAiUrl": "",
+  "AzureOpenAiModel": "",
+  "AzureOpenAiApiKey": "",
+  "OpenAiModel": "",
+  "OpenAiApiKey": "",
+  "GeminiApiKey": ""
 }
+
