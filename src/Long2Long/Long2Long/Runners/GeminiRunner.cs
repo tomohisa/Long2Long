@@ -40,7 +40,7 @@ public class GeminiRunner
         {
             return Task.FromResult(result with { ErrorMessage = "APIキーが入力されていません。" });
         }
-        var gemini = new GenerativeModel(settings.GeminiApiKey);
+        var gemini = new GenerativeModel(settings.GeminiApiKey, settings.GeminiModel);
 
         foreach (var prompt in settings.Prompts)
         {
