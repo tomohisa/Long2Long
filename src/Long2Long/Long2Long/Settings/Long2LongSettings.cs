@@ -75,16 +75,20 @@ public record Long2LongSettings
             }
             settings = JsonSerializer.Deserialize<Long2LongSettings>(File.ReadAllText(filename)) ??
                 settings;
-            return settings.MergePromptWithPrompts().FillFromEnvironment();
+            return settings.MergePromptWithPrompts().InjectIdInPrompts().FillFromEnvironment();
         }
         Console.WriteLine("コマンドラインのパラメーターで設定ファイルを指定してください。");
         Console.WriteLine("例: L2L settings.json");
 
-        return settings.MergePromptWithPrompts().FillFromEnvironment();
+        return settings.MergePromptWithPrompts().InjectIdInPrompts().FillFromEnvironment();
     }
     public Long2LongSettings MergePromptWithPrompts() => this with
     {
         Prompts = Prompt is not null ? Prompts.Add(Prompt) : Prompts, Prompt = null
+    };
+    public Long2LongSettings InjectIdInPrompts() => this with
+    {
+        Prompts = Prompts.Select((p, i) => p with { Id = i + 1 }).ToImmutableList()
     };
     public Long2LongSettings FillFromEnvironment()
     {

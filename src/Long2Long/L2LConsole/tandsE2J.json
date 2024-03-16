@@ -1,0 +1,29 @@
+{
+  "InputFile": "in.txt",
+  "OutputFile": "Aggregates Composition A new view.md",
+  "MaxTokenCount": 500,
+  "MinTokenCount": 400,
+  "Prompts": [
+    {
+      "System": "あなたは翻訳者です。文章を意訳せずにそのまま翻訳してください。返信の最初にメッセージを入れずに、すぐに翻訳で始めてください。タイムラインも数字の行もそのまま残してください。",
+      "User": "以下の文章を和訳してください。\n------\n"
+    },
+    {
+      "System": "あなたは優秀な編集者です。返信の最初にメッセージを入れずに、すぐに出力で始めてください。",
+      "User": "以下の文章を md ファイルとして編集してください。コンテンツは全て日本語で生成してください。全ての時間情報をキープする必要はありませんが、わかりやすく見出しも入れることが可能です。新たな内容の追加は不要です。ただ、この文は長い文の一部で前後にも文章が存在することを理解して行ってください。\n------\n"
+    }
+  ],
+  "UseAnthropic": true,
+  "UseAzureOpenAi": true,
+  "UseGemini": true,
+  "UseOpenAi": true,
+  "AnthropicModel": "",
+  "AnthropicApiKey": "",
+  "AzureOpenAiUrl": "",
+  "AzureOpenAiModel": "",
+  "AzureOpenAiApiKey": "",
+  "OpenAiModel": "",
+  "OpenAiApiKey": "",
+  "GeminiApiKey": ""
+}
+

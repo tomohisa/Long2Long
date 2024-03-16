@@ -94,7 +94,7 @@ public class AzureOpenAiRunner
                 result = result with
                 {
                     Phases = result.Phases.Add(
-                        L2LPromptResult.FromAzureOpenAiMessageResult(message))
+                        L2LPromptResult.FromAzureOpenAiMessageResult(message, prompt.Id))
                 };
                 text = message?.Value.Choices.FirstOrDefault()?.Message.Content ?? string.Empty;
             }
@@ -103,9 +103,9 @@ public class AzureOpenAiRunner
                 result = result with
                 {
                     Phases = result.Phases.Add(
-                        new L2LPromptResult(string.Empty, e.Message))
+                        new L2LPromptResult(string.Empty, e.Message, prompt.Id)),
+                    ErrorMessage = result.ErrorMessage + e.Message + " | "
                 };
-                Console.WriteLine(e);
             }
         }
         return Task.FromResult(result);

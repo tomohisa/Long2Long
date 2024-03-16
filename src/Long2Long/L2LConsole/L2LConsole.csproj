@@ -24,6 +24,9 @@
         <None Update="translateE2J.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
+        <None Update="tandsE2J.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
 </Project>
