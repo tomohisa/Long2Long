@@ -9,7 +9,6 @@
     <ItemGroup>
         <PackageReference Include="AI.Dev.OpenAI.GPT" Version="1.0.2"/>
         <PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.14"/>
-        <PackageReference Include="Betalgo.OpenAI" Version="7.4.6"/>
         <PackageReference Include="Claudia" Version="0.0.9"/>
         <PackageReference Include="Google_GenerativeAI" Version="0.1.15"/>
     </ItemGroup>

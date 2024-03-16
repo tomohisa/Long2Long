@@ -1,6 +1,6 @@
 {
   "InputFile": "in.txt",
-  "OutputFile": "Aggregates Composition A new view.md",
+  "OutputFile": "Zero-Downtime Projections Replay.md",
   "MaxTokenCount": 500,
   "MinTokenCount": 400,
   "Prompts": [

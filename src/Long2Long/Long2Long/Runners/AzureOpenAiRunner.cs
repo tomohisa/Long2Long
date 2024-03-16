@@ -29,10 +29,11 @@ public class AzureOpenAiRunner
                             await semaphore.WaitAsync();
                             started(result.ServiceProvider.ToString(), chunk.Id);
                             var currentMessage = chunk.Text;
-                            var chunkResult = await RunChunkAsync(
-                                chunk.Id,
-                                currentMessage,
-                                settings);
+
+                            var chunkResult = await Runner.RunChunkWithRetryAsync(
+                                3,
+                                () => RunChunkAsync(chunk.Id, currentMessage, settings));
+
                             result = result.AppendChunk(chunkResult);
                             ended(
                                 result.ServiceProvider.ToString(),
@@ -41,6 +42,7 @@ public class AzureOpenAiRunner
                         }
                         finally
                         {
+                            await Task.Delay(1000);
                             semaphore.Release();
                         }
                     })));

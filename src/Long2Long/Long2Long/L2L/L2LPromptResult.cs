@@ -1,7 +1,6 @@
 using Azure;
 using Azure.AI.OpenAI;
 using Claudia;
-using OpenAI.ObjectModels.ResponseModels;
 namespace Long2Long.L2L;
 
 public record L2LPromptResult(string Output, string ErrorMessage, int PromptId)
@@ -34,17 +33,6 @@ public record L2LPromptResult(string Output, string ErrorMessage, int PromptId)
         }
         return new L2LPromptResult(
             completion.Value.Choices.Aggregate(
-                string.Empty,
-                (s, choice) => s + choice.Message.Content),
-            string.Empty,
-            promptId);
-    }
-    public static L2LPromptResult FromOpenAiMessageResult(
-        ChatCompletionCreateResponse message,
-        int promptId)
-    {
-        return new L2LPromptResult(
-            message.Choices.Aggregate(
                 string.Empty,
                 (s, choice) => s + choice.Message.Content),
             string.Empty,

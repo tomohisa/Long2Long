@@ -18,7 +18,11 @@ public class GeminiRunner
         {
             started(result.ServiceProvider.ToString(), chunk.Id);
             var currentMessage = chunk.Text;
-            var chunkResult = await RunChunkAsync(chunk.Id, currentMessage, settings);
+
+            var chunkResult = await Runner.RunChunkWithRetryAsync(
+                3,
+                () => RunChunkAsync(chunk.Id, currentMessage, settings));
+
             result = result.AppendChunk(chunkResult);
             ended(result.ServiceProvider.ToString(), chunk.Id, chunkResult.ErrorMessage);
             await Task.Delay(2000);
