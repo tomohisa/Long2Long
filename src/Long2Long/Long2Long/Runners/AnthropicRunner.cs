@@ -7,7 +7,7 @@ namespace Long2Long.Runners;
 
 public class AnthropicRunner
 {
-    private readonly SemaphoreSlim semaphore = new(3);
+    private readonly SemaphoreSlim semaphore = new(2);
     public async Task<L2LResults> RunAsync(
         SplitInputText inputs,
         Long2LongSettings settings,
@@ -84,7 +84,7 @@ public class AnthropicRunner
                 result = result with
                 {
                     Phases = result.Phases.Add(
-                        L2LPromptResult.FromAnthropicMessageResult(message))
+                        L2LPromptResult.FromAnthropicMessageResult(message, prompt.Id))
                 };
                 text = message.Content.LastOrDefault()?.Text ?? string.Empty;
             }
@@ -93,7 +93,7 @@ public class AnthropicRunner
                 result = result with
                 {
                     Phases = result.Phases.Add(
-                        new L2LPromptResult(string.Empty, e.Message)),
+                        new L2LPromptResult(string.Empty, e.Message, prompt.Id)),
                     ErrorMessage = result.ErrorMessage + e.Message + " | "
                 };
             }

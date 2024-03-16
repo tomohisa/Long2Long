@@ -6,5 +6,6 @@ public record L2LChunkResult(int Id, ImmutableList<L2LPromptResult> Phases, stri
     public static L2LChunkResult Empty =>
         new(0, ImmutableList<L2LPromptResult>.Empty, string.Empty);
 
-    public string GetOutputText() => Phases.LastOrDefault()?.Output ?? string.Empty;
+    public string GetOutputText(int promptId) =>
+        Phases.LastOrDefault(m => m.PromptId == promptId)?.Output ?? string.Empty;
 }

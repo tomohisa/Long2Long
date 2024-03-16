@@ -47,7 +47,7 @@ public class GeminiRunner
                 result = result with
                 {
                     Phases = result.Phases.Add(
-                        L2LPromptResult.FromGeminiMessageResult(response))
+                        L2LPromptResult.FromGeminiMessageResult(response, prompt.Id))
                 };
                 text = response ?? string.Empty;
             }
@@ -56,9 +56,9 @@ public class GeminiRunner
                 result = result with
                 {
                     Phases = result.Phases.Add(
-                        new L2LPromptResult(string.Empty, e.Message))
+                        new L2LPromptResult(string.Empty, e.Message, prompt.Id)),
+                    ErrorMessage = result.ErrorMessage + e.Message + " | "
                 };
-                Console.WriteLine(e);
             }
         }
         return Task.FromResult(result);

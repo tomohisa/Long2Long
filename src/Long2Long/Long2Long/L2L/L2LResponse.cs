@@ -8,18 +8,32 @@ public record L2LResponse(ImmutableList<L2LResults> Results, string? Error)
     {
         foreach (var result in Results)
         {
-            var filename = settings.OutputFile;
-            // add addition and period before the extension
-            if (Results.Count > 1)
+            foreach (var prompt in settings.Prompts)
             {
-                var extension = Path.GetExtension(filename);
-                filename = Path.GetFileNameWithoutExtension(filename) +
-                    "." +
-                    result.ServiceProvider +
-                    extension;
+                var filename = settings.OutputFile;
+                // add addition and period before the extension
+                if (Results.Count > 1)
+                {
+                    var extension = Path.GetExtension(filename);
+                    filename = Path.GetFileNameWithoutExtension(filename) +
+                        "." +
+                        result.ServiceProvider +
+                        extension;
+                }
+
+                if (settings.Prompts.Count > 1)
+                {
+                    filename = Path.GetFileNameWithoutExtension(filename) +
+                        ".P" +
+                        prompt.Id +
+                        Path.GetExtension(filename);
+                }
+
+                // write to file
+                File.WriteAllText(filename, result.GetOutputText(prompt.Id));
+
             }
-            // write to file
-            File.WriteAllText(filename, result.GetOutputText());
+
         }
     }
 }

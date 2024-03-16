@@ -18,5 +18,7 @@ public record L2LResults(
         this with { Results = Results.Add(chunk) };
     public L2LResults OrderByChunkId() =>
         this with { Results = Results.OrderBy(r => r.Id).ToImmutableList() };
-    public string GetOutputText() => string.Join("\n", Results.Select(r => r.GetOutputText()));
+    public string GetOutputText(int promptId) => string.Join(
+        "\n",
+        Results.Select(r => r.GetOutputText(promptId)));
 }
