@@ -1,15 +1,15 @@
 {
-  "OutputFile": "outputQuestion.txt",
+  "OutputFile": "/Users/tomohisa/Documents/Work/notes/2024/03/DDDEU/foldertest.txt",
   "MaxTokenCount": 500,
   "MinTokenCount": 400,
   "Prompts": [
     {
-      "System": "あなたはコンピューターシステムのアーキテクトです。色々なシステムの利点やトレードオフをよく考慮して質問に答えてください。",
-      "User": "イベントソーシングとステートソーシングのトレードオフをC#の実例を含めて説明してください。(500文字程度で短く)\n------\n"
+      "System": "",
+      "User": "サーバーレスFunctionsでイベントソーシングを使う際に気をつけることはなんですか？.\n------\n"
     }
   ],
-  "UseAnthropic": false,
-  "UseAzureOpenAi": false,
-  "UseGemini": false,
+  "UseAnthropic": true,
+  "UseAzureOpenAi": true,
+  "UseGemini": true,
   "UseOpenAi": true
 }

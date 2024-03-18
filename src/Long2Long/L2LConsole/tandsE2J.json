@@ -1,6 +1,6 @@
 {
-  "InputFile": "in.txt",
-  "OutputFile": "Zero-Downtime Projections Replay.md",
+  "InputFile": "/Users/tomohisa/Documents/Work/notes/2024/03/DDDEU/Event Sourcing in a Serverless World - Alexey Zimarev - DDD Europe 2023.md",
+  "OutputFile": "/Users/tomohisa/Documents/Work/notes/2024/03/DDDEU/Event Sourcing in a Serverless World.md",
   "MaxTokenCount": 500,
   "MinTokenCount": 400,
   "Prompts": [
@@ -13,10 +13,10 @@
       "User": "以下の文章を md ファイルとして編集してください。コンテンツは全て日本語で生成してください。全ての時間情報をキープする必要はありませんが、わかりやすく見出しも入れることが可能です。新たな内容の追加は不要です。ただ、この文は長い文の一部で前後にも文章が存在することを理解して行ってください。\n------\n"
     }
   ],
-  "UseAnthropic": false,
-  "UseAzureOpenAi": false,
+  "UseAnthropic": true,
+  "UseAzureOpenAi": true,
   "UseGemini": true,
-  "UseOpenAi": false,
+  "UseOpenAi": true,
   "AnthropicModel": "",
   "AnthropicApiKey": "",
   "AzureOpenAiUrl": "",
