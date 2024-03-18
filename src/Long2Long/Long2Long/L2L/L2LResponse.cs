@@ -14,19 +14,28 @@ public record L2LResponse(ImmutableList<L2LResults> Results, string? Error)
                 // add addition and period before the extension
                 if (Results.Count > 1)
                 {
-                    var extension = Path.GetExtension(filename);
+                    var folder = Path.GetDirectoryName(filename);
                     filename = Path.GetFileNameWithoutExtension(filename) +
                         "." +
                         result.ServiceProvider +
-                        extension;
+                        Path.GetExtension(filename);
+                    if (!string.IsNullOrWhiteSpace(folder))
+                    {
+                        filename = Path.Combine(folder, filename);
+                    }
                 }
 
                 if (settings.Prompts.Count > 1)
                 {
+                    var folder = Path.GetDirectoryName(filename);
                     filename = Path.GetFileNameWithoutExtension(filename) +
                         ".P" +
                         prompt.Id +
                         Path.GetExtension(filename);
+                    if (!string.IsNullOrWhiteSpace(folder))
+                    {
+                        filename = Path.Combine(folder, filename);
+                    }
                 }
 
                 // write to file

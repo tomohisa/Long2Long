@@ -93,6 +93,12 @@ public class Runner
             }
             Console.WriteLine($"Error: {result.ErrorMessage} - retrying...");
             executeCount++;
+            // if error message is not empty and contains "rate limit" then wait 5 seconds before retry
+            if (executeCount <= maxExecuteCount && result.ErrorMessage.Contains("rate limit"))
+            {
+                // wait 5 seconds before retry because
+                await Task.Delay(5000);
+            }
         } while (executeCount <= maxExecuteCount);
         return result;
     }
