@@ -91,8 +91,10 @@ public class Runner
             {
                 return result;
             }
-            Console.WriteLine($"Error: {result.ErrorMessage} - retrying...");
             executeCount++;
+            Console.WriteLine(
+                $"Error: {result.ErrorMessage} - {(executeCount <= maxExecuteCount ? "retrying..." : "max retry count reached. Finish with Error.")}"
+            );
             // if error message is not empty and contains "rate limit" then wait 5 seconds before retry
             if (executeCount <= maxExecuteCount && result.ErrorMessage.Contains("rate limit"))
             {
