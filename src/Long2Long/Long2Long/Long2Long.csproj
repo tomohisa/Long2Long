@@ -8,9 +8,9 @@
 
     <ItemGroup>
         <PackageReference Include="AI.Dev.OpenAI.GPT" Version="1.0.2"/>
-        <PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.14"/>
-        <PackageReference Include="Claudia" Version="1.0.1"/>
-        <PackageReference Include="Google_GenerativeAI" Version="0.1.15"/>
+        <PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.16"/>
+        <PackageReference Include="Claudia" Version="1.2.0"/>
+        <PackageReference Include="Google_GenerativeAI" Version="0.1.19"/>
     </ItemGroup>
 
 </Project>
