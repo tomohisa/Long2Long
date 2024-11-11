@@ -1,9 +1,9 @@
-using Azure;
-using Azure.AI.OpenAI;
-using Azure.Core;
 using Long2Long.L2L;
 using Long2Long.Settings;
 using Long2Long.Texts;
+using OpenAI;
+using OpenAI.Chat;
+using System.ClientModel;
 using System.Collections.Immutable;
 namespace Long2Long.Runners;
 
@@ -35,10 +35,7 @@ public class AzureOpenAiRunner
                                 () => RunChunkAsync(chunk.Id, currentMessage, settings));
 
                             result = result.AppendChunk(chunkResult);
-                            ended(
-                                result.ServiceProvider.ToString(),
-                                chunk.Id,
-                                chunkResult.ErrorMessage);
+                            ended(result.ServiceProvider.ToString(), chunk.Id, chunkResult.ErrorMessage);
                         }
                         finally
                         {
@@ -51,65 +48,54 @@ public class AzureOpenAiRunner
         return result.OrderByChunkId();
     }
 
-    public Task<L2LChunkResult> RunChunkAsync(
-        int id,
-        string text,
-        Long2LongSettings settings)
+    public async Task<L2LChunkResult> RunChunkAsync(int id, string text, Long2LongSettings settings)
     {
         var result = L2LChunkResult.Empty with { Id = id };
         if (string.IsNullOrWhiteSpace(settings.AzureOpenAiUrl))
         {
-            return Task.FromResult(result with { ErrorMessage = "AzureOpenAiUrl が入力されていません。" });
+            return await Task.FromResult(result with { ErrorMessage = "AzureOpenAiUrl が入力されていません。" });
         }
         if (string.IsNullOrWhiteSpace(settings.AzureOpenAiApiKey))
         {
-            return Task.FromResult(result with { ErrorMessage = "AzureOpenAiApiKey が入力されていません。" });
+            return await Task.FromResult(result with { ErrorMessage = "AzureOpenAiApiKey が入力されていません。" });
         }
         if (string.IsNullOrWhiteSpace(settings.AzureOpenAiModel))
         {
-            return Task.FromResult(result with { ErrorMessage = "AzureOpenAiModel が入力されていません。" });
+            return await Task.FromResult(result with { ErrorMessage = "AzureOpenAiModel が入力されていません。" });
         }
         var clientOptions = new OpenAIClientOptions
         {
-            Retry =
-            {
-                NetworkTimeout = TimeSpan.FromMinutes(5), Mode = RetryMode.Exponential,
-                MaxRetries = 2
-            }
+            Endpoint = new Uri(settings.AzureOpenAiUrl)
         };
-        var openAiClient = new OpenAIClient(
-            new Uri(settings.AzureOpenAiUrl),
-            new AzureKeyCredential(settings.AzureOpenAiApiKey),
-            clientOptions);
+        var openAiClient = new OpenAIClient(new ApiKeyCredential(settings.AzureOpenAiApiKey), clientOptions);
 
         foreach (var prompt in settings.Prompts)
         {
             try
             {
-                var options = new ChatCompletionsOptions();
-                options.DeploymentName = settings.AzureOpenAiModel;
-                options.Messages.Add(new ChatRequestSystemMessage(prompt.System));
-                options.Messages.Add(new ChatRequestUserMessage(prompt.User + text));
-
-                var message = openAiClient.GetChatCompletions(options);
-                // get all stream
+                var client = openAiClient.GetChatClient(settings.AzureOpenAiModel);
+                ChatCompletion completion = await client.CompleteChatAsync(
+                    new SystemChatMessage(prompt.System),
+                    new UserChatMessage(prompt.User + text));
                 result = result with
                 {
-                    Phases = result.Phases.Add(
-                        L2LPromptResult.FromAzureOpenAiMessageResult(message, prompt.Id))
+                    Phases = result.Phases.Add(L2LPromptResult.FromAzureOpenAiMessageResult(completion, prompt.Id))
                 };
-                text = message?.Value.Choices.FirstOrDefault()?.Message.Content ?? string.Empty;
+                text = completion?.Content[0].Text ?? string.Empty;
             }
             catch (Exception e)
             {
                 result = result with
                 {
-                    Phases = result.Phases.Add(
-                        new L2LPromptResult(string.Empty, e.Message, prompt.Id)),
+                    Phases = result.Phases.Add(new L2LPromptResult(string.Empty, e.Message, prompt.Id)),
                     ErrorMessage = result.ErrorMessage + e.Message + " | "
                 };
+                // Log detailed error information
+                Console.WriteLine($"Error processing chunk {id}: {e.Message}");
+                Console.WriteLine($"URL: {settings.AzureOpenAiUrl}");
+                Console.WriteLine($"Model: {settings.AzureOpenAiModel}");
             }
         }
-        return Task.FromResult(result);
+        return await Task.FromResult(result);
     }
 }

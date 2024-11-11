@@ -1,0 +1,15 @@
+{
+  "OutputFile": "/Users/tomohisa/dev/test/dotnetlab202403/Demo4/demo.md",
+  "MaxTokenCount": 500,
+  "MinTokenCount": 400,
+  "Prompts": [
+    {
+      "System": "",
+      "User": "コンピュータープログラマがクスッと笑うような面白い小噺を3つ作ってください。それぞれ３００文字ずつくらいでおねがいします。\n------\n"
+    }
+  ],
+  "UseAnthropic": false,
+  "UseAzureOpenAi": false,
+  "UseGemini": false,
+  "UseOpenAi": true
+}

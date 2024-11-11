@@ -25,20 +25,17 @@ public class GeminiRunner
 
             result = result.AppendChunk(chunkResult);
             ended(result.ServiceProvider.ToString(), chunk.Id, chunkResult.ErrorMessage);
-            await Task.Delay(2000);
+            await Task.Delay(5000);
         }
         return result.OrderByChunkId();
     }
 
-    public Task<L2LChunkResult> RunChunkAsync(
-        int id,
-        string text,
-        Long2LongSettings settings)
+    public async Task<L2LChunkResult> RunChunkAsync(int id, string text, Long2LongSettings settings)
     {
         var result = L2LChunkResult.Empty with { Id = id };
         if (string.IsNullOrWhiteSpace(settings.GeminiApiKey))
         {
-            return Task.FromResult(result with { ErrorMessage = "APIキーが入力されていません。" });
+            return await Task.FromResult(result with { ErrorMessage = "APIキーが入力されていません。" });
         }
         var gemini = new GenerativeModel(settings.GeminiApiKey, settings.GeminiModel);
 
@@ -46,12 +43,10 @@ public class GeminiRunner
         {
             try
             {
-                var response = gemini.GenerateContentAsync(prompt.System + prompt.User + text)
-                    .Result;
+                var response = gemini.GenerateContentAsync(prompt.System + prompt.User + text).Result;
                 result = result with
                 {
-                    Phases = result.Phases.Add(
-                        L2LPromptResult.FromGeminiMessageResult(response, prompt.Id))
+                    Phases = result.Phases.Add(L2LPromptResult.FromGeminiMessageResult(response, prompt.Id))
                 };
                 text = response ?? string.Empty;
             }
@@ -59,12 +54,12 @@ public class GeminiRunner
             {
                 result = result with
                 {
-                    Phases = result.Phases.Add(
-                        new L2LPromptResult(string.Empty, e.Message, prompt.Id)),
+                    Phases = result.Phases.Add(new L2LPromptResult(string.Empty, e.Message, prompt.Id)),
                     ErrorMessage = result.ErrorMessage + e.Message + " | "
                 };
+                await Task.Delay(10000);
             }
         }
-        return Task.FromResult(result);
+        return await Task.FromResult(result);
     }
 }

@@ -1,0 +1,15 @@
+{
+  "OutputFile": "/Users/tomohisa/dev/test/dotnetlab202403/Demo3/demo.md",
+  "MaxTokenCount": 500,
+  "MinTokenCount": 400,
+  "Prompts": [
+    {
+      "System": "",
+      "User": "C#や.NETを使用することのメリットデメリットを、javaを使用することと比べて表現してください。マークダウン形式の出力で、1000文字程度で説明してください？.\n------\n"
+    }
+  ],
+  "UseAnthropic": true,
+  "UseAzureOpenAi": true,
+  "UseGemini": true,
+  "UseOpenAi": true
+}

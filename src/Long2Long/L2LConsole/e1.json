@@ -1,0 +1,25 @@
+{
+  "InputFile": "/Users/tomohisa/Documents/Work/notes/2024/07/25.sr.md",
+  "OutputFile": "/Users/tomohisa/Documents/Work/notes/2024/07/25.sr.md",
+  "MaxTokenCount": 400,
+  "MinTokenCount": 350,
+  "Prompts": [
+    {
+      "System": "あなたはプロのビジネス秘書です。文章を意訳せずにそのまま編集してください。返信の最初にメッセージを入れずに、すぐに翻訳で始めてください。タイムラインも数字の行もそのまま残してください。",
+      "User": "以下の文章を日本のビジネスに合う形で、リスペクトを伴いつつ、正確で分かりやすい文面に編集してください。\n------\n"
+    }
+  ],
+  "UseAnthropic": true,
+  "UseAzureOpenAi": true,
+  "UseGemini": true,
+  "UseOpenAi": false,
+  "AnthropicModel": "",
+  "AnthropicApiKey": "",
+  "AzureOpenAiUrl": "",
+  "AzureOpenAiModel": "",
+  "AzureOpenAiApiKey": "",
+  "OpenAiModel": "",
+  "OpenAiApiKey": "",
+  "GeminiApiKey": ""
+}
+

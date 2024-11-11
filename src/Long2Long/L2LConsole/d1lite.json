@@ -1,0 +1,25 @@
+{
+  "InputFile": "/Users/tomohisa/dev/GitHub/JJDocs/Users/tomohisa/l2ltest/RepeatSubmit.java",
+  "OutputFile": "/Users/tomohisa/dev/GitHub/JJDocs/Users/tomohisa/l2ltest/RepeatSubmit.java",
+  "MaxTokenCount": 450,
+  "MinTokenCount": 350,
+  "Prompts": [
+    {
+      "System": "あなたは多言語を話すプログラマです。返信の最初にメッセージを入れずに、すぐに回答してください。",
+      "User": "中国語や英語のコメントの入ったjavaのプログラムの一部を渡します。コメント以外は何も変えないでください。コメント部分は中国語から日本語に翻訳してください。プログラムの動作は変えないでください。```java などのマークダウンコードブロックは入れないでください。プログラム内の文字列\"\"の中は変更しないでください。\n------\n"
+    }
+  ],
+  "UseAnthropic": true,
+  "UseAzureOpenAi": true,
+  "UseGemini": true,
+  "UseOpenAi": false,
+  "AnthropicModel": "",
+  "AnthropicApiKey": "",
+  "AzureOpenAiUrl": "",
+  "AzureOpenAiModel": "",
+  "AzureOpenAiApiKey": "",
+  "OpenAiModel": "gpt-4o",
+  "OpenAiApiKey": "",
+  "GeminiApiKey": ""
+}
+

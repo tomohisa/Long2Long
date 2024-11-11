@@ -71,7 +71,7 @@ public class AnthropicRunner
                 var messageRequest = new MessageRequest
                 {
                     Model = settings.AnthropicModel,
-                    MaxTokens = 1024,
+                    MaxTokens = 2048,
                     System = prompt.System,
                     Messages =
                     [

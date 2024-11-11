@@ -1,0 +1,25 @@
+{
+  "InputFile": "/Users/tomohisa/Documents/Work/notes/2024/10/Blogs/Subtype/trait.md",
+  "OutputFile": "/Users/tomohisa/Documents/Work/notes/2024/10/Blogs/Subtype/trait.md",
+  "MaxTokenCount": 400,
+  "MinTokenCount": 350,
+  "Prompts": [
+    {
+      "System": "You are a translator of programming technical books. Please translate the sentences without paraphrasing. Start with the translation immediately without including a message such as \"Here is the English translation.\" at the beginning of the reply.",
+      "User": "Translate following sentences to English.\n------\n"
+    }
+  ],
+  "UseAnthropic": true,
+  "UseAzureOpenAi": true,
+  "UseGemini": true,
+  "UseOpenAi": false,
+  "AnthropicModel": "",
+  "AnthropicApiKey": "",
+  "AzureOpenAiUrl": "",
+  "AzureOpenAiModel": "",
+  "AzureOpenAiApiKey": "",
+  "OpenAiModel": "",
+  "OpenAiApiKey": "",
+  "GeminiApiKey": ""
+}
+

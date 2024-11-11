@@ -1,8 +1,9 @@
-using Azure.AI.OpenAI;
-using Azure.Core;
 using Long2Long.L2L;
 using Long2Long.Settings;
 using Long2Long.Texts;
+using OpenAI;
+using OpenAI.Chat;
+using System.ClientModel;
 using System.Collections.Immutable;
 namespace Long2Long.Runners;
 
@@ -34,10 +35,7 @@ public class OpenAiRunner
                                 () => RunChunkAsync(chunk.Id, currentMessage, settings));
 
                             result = result.AppendChunk(chunkResult);
-                            ended(
-                                result.ServiceProvider.ToString(),
-                                chunk.Id,
-                                chunkResult.ErrorMessage);
+                            ended(result.ServiceProvider.ToString(), chunk.Id, chunkResult.ErrorMessage);
                         }
                         finally
                         {
@@ -50,58 +48,44 @@ public class OpenAiRunner
         return result.OrderByChunkId();
     }
 
-    public Task<L2LChunkResult> RunChunkAsync(
-        int id,
-        string text,
-        Long2LongSettings settings)
+    public async Task<L2LChunkResult> RunChunkAsync(int id, string text, Long2LongSettings settings)
     {
         var result = L2LChunkResult.Empty with { Id = id };
         if (string.IsNullOrWhiteSpace(settings.OpenAiApiKey))
         {
-            return Task.FromResult(result with { ErrorMessage = "OpenAiApiKey が入力されていません。" });
+            return await Task.FromResult(result with { ErrorMessage = "OpenAiApiKey が入力されていません。" });
         }
         if (string.IsNullOrWhiteSpace(settings.OpenAiModel))
         {
-            return Task.FromResult(result with { ErrorMessage = "OpenAiModel が入力されていません。" });
+            return await Task.FromResult(result with { ErrorMessage = "OpenAiModel が入力されていません。" });
         }
-        var clientOptions = new OpenAIClientOptions
-        {
-            Retry =
-            {
-                NetworkTimeout = TimeSpan.FromMinutes(5), Mode = RetryMode.Exponential,
-                MaxRetries = 2
-            }
-        };
-        var openAiClient = new OpenAIClient(settings.OpenAiApiKey, clientOptions);
+        var clientOptions = new OpenAIClientOptions();
+        var openAiClient = new OpenAIClient(new ApiKeyCredential(settings.OpenAiApiKey), clientOptions);
+
 
         foreach (var prompt in settings.Prompts)
         {
             try
             {
-                var options = new ChatCompletionsOptions();
-                options.DeploymentName = settings.OpenAiModel;
-                options.Messages.Add(new ChatRequestSystemMessage(prompt.System));
-                options.Messages.Add(new ChatRequestUserMessage(prompt.User + text));
-
-                var message = openAiClient.GetChatCompletions(options);
-                // get all stream
+                var client = openAiClient.GetChatClient(settings.OpenAiModel);
+                ChatCompletion completion = await client.CompleteChatAsync(
+                    new SystemChatMessage(prompt.System),
+                    new UserChatMessage(prompt.User + text));
                 result = result with
                 {
-                    Phases = result.Phases.Add(
-                        L2LPromptResult.FromAzureOpenAiMessageResult(message, prompt.Id))
+                    Phases = result.Phases.Add(L2LPromptResult.FromAzureOpenAiMessageResult(completion, prompt.Id))
                 };
-                text = message?.Value.Choices.FirstOrDefault()?.Message.Content ?? string.Empty;
+                text = completion?.Content[0].Text ?? string.Empty;
             }
             catch (Exception e)
             {
                 result = result with
                 {
-                    Phases = result.Phases.Add(
-                        new L2LPromptResult(string.Empty, e.Message, prompt.Id)),
+                    Phases = result.Phases.Add(new L2LPromptResult(string.Empty, e.Message, prompt.Id)),
                     ErrorMessage = result.ErrorMessage + e.Message + " | "
                 };
             }
         }
-        return Task.FromResult(result);
+        return await Task.FromResult(result);
     }
 }

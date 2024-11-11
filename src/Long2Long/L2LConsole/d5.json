@@ -1,0 +1,15 @@
+{
+  "OutputFile": "/Users/tomohisa/Documents/Work/notes/2024/04/JTS Quarterly/backend.md",
+  "MaxTokenCount": 1000,
+  "MinTokenCount": 800,
+  "Prompts": [
+    {
+      "System": "",
+      "User": "使いやすいアプリケーションの最新動向 というタイトルでレポートを書いています。\nこの章は「使いやすいアプリケーションを実現するための技術の最新動向」という題です。\n章の中では大きく分けて以下の点を扱います。\n- マイクロサービスを使用してサーバーを機能で分割する\n- マイクロサービスにより使いやすくなるUI技術\n- マイクロサービスを支える組織作り\nこの章の紹介文を書いてください\n------\n"
+    }
+  ],
+  "UseAnthropic": true,
+  "UseAzureOpenAi": true,
+  "UseGemini": true,
+  "UseOpenAi": false
+}

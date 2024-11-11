@@ -23,7 +23,7 @@ public record Long2LongSettings
     public int MinTokenCount { get; init; } = 4500;
 
     public bool UseAnthropic { get; init; }
-    public string AnthropicModel { get; init; } = "claude-3-opus-20240229";
+    public string AnthropicModel { get; init; } = "claude-3-5-sonnet-20240620";
     /// <summary>
     ///     if empty, use environment variable ANTHROPIC_API_KEY
     /// </summary>
@@ -44,14 +44,14 @@ public record Long2LongSettings
     public string AzureOpenAiApiKey { get; init; } = string.Empty;
 
     public bool UseOpenAi { get; init; }
-    public string OpenAiModel { get; init; } = "gpt-4-turbo-preview";
+    public string OpenAiModel { get; init; } = "chatgpt-4o-latest";
     /// <summary>
     ///     if empty, use environment variable OPENAI_API_KEY
     /// </summary>
     public string OpenAiApiKey { get; init; } = string.Empty;
 
     public bool UseGemini { get; init; }
-    public string GeminiModel { get; init; } = "gemini-pro";
+    public string GeminiModel { get; init; } = "gemini-1.5-pro";
     /// <summary>
     ///     if empty, use environment variable GEMINI_API_KEY
     /// </summary>
@@ -73,8 +73,7 @@ public record Long2LongSettings
             {
                 filename += ".json";
             }
-            settings = JsonSerializer.Deserialize<Long2LongSettings>(File.ReadAllText(filename)) ??
-                settings;
+            settings = JsonSerializer.Deserialize<Long2LongSettings>(File.ReadAllText(filename)) ?? settings;
             return settings.MergePromptWithPrompts().InjectIdInPrompts().FillFromEnvironment();
         }
         Console.WriteLine("コマンドラインのパラメーターで設定ファイルを指定してください。");
@@ -97,72 +96,63 @@ public record Long2LongSettings
         {
             settings = settings with
             {
-                AnthropicApiKey = Environment.GetEnvironmentVariable("ANTHROPIC_API_KEY") ??
-                string.Empty
+                AnthropicApiKey = Environment.GetEnvironmentVariable("ANTHROPIC_API_KEY") ?? string.Empty
             };
         }
         if (UseAnthropic && string.IsNullOrWhiteSpace(AnthropicModel))
         {
             settings = settings with
             {
-                AnthropicModel = Environment.GetEnvironmentVariable("ANTHROPIC_MODEL") ??
-                "claude-3-opus-20240229"
+                AnthropicModel = Environment.GetEnvironmentVariable("ANTHROPIC_MODEL") ?? "claude-3-opus-20240229"
             };
         }
         if (UseAzureOpenAi && string.IsNullOrWhiteSpace(AzureOpenAiUrl))
         {
             settings = settings with
             {
-                AzureOpenAiUrl = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_URL") ??
-                string.Empty
+                AzureOpenAiUrl = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_URL") ?? string.Empty
             };
         }
         if (UseAzureOpenAi && string.IsNullOrWhiteSpace(AzureOpenAiApiKey))
         {
             settings = settings with
             {
-                AzureOpenAiApiKey = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY") ??
-                string.Empty
+                AzureOpenAiApiKey = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY") ?? string.Empty
             };
         }
         if (UseAzureOpenAi && string.IsNullOrWhiteSpace(AzureOpenAiModel))
         {
             settings = settings with
             {
-                AzureOpenAiModel = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_MODEL") ??
-                string.Empty
+                AzureOpenAiModel = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_MODEL") ?? string.Empty
             };
         }
         if (UseOpenAi && string.IsNullOrWhiteSpace(OpenAiApiKey))
         {
             settings = settings with
             {
-                OpenAiApiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY") ??
-                string.Empty
+                OpenAiApiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY") ?? string.Empty
             };
         }
         if (UseOpenAi && string.IsNullOrWhiteSpace(OpenAiModel))
         {
             settings = settings with
             {
-                OpenAiModel = Environment.GetEnvironmentVariable("OPENAI_MODEL") ??
-                "gpt-4-turbo-preview"
+                OpenAiModel = Environment.GetEnvironmentVariable("OPENAI_MODEL") ?? "gpt-4-turbo-preview"
             };
         }
         if (UseGemini && string.IsNullOrWhiteSpace(GeminiApiKey))
         {
             settings = settings with
             {
-                GeminiApiKey = Environment.GetEnvironmentVariable("GEMINI_API_KEY") ??
-                string.Empty
+                GeminiApiKey = Environment.GetEnvironmentVariable("GEMINI_API_KEY") ?? string.Empty
             };
         }
         if (UseGemini && string.IsNullOrWhiteSpace(GeminiModel))
         {
             settings = settings with
             {
-                GeminiModel = Environment.GetEnvironmentVariable("GEMINI_MODEL") ??
-                "gemini-pro"
+                GeminiModel = Environment.GetEnvironmentVariable("GEMINI_MODEL") ?? "gemini-pro"
             };
         }
         return settings;
